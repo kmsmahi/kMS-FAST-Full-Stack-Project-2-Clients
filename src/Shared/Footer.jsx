@@ -18,7 +18,7 @@ export default function Footer() {
               <div className="w-9 h-9 flex items-center justify-center transition-transform duration-300 group-hover:scale-105">
                 <Logo />
               </div>
-              <span className="text-xl font-bold tracking-tight text-white font-sans">
+              <span className="text-xl font-bold tracking-tight text-white font-sans -ms-3 mt-2">
                 KMS<span className="text-[#CAEB66]">-FAST</span>
               </span>
             </Link>

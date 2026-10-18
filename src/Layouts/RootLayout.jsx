@@ -4,9 +4,9 @@ import Navbar from '../Shared/Navbar';
 
 export default function RootLayout() {
   return (
-    <div className="min-h-screen  flex flex-col">
+    <div className="min-h-screen  flex flex-col gap-6">
       <Navbar></Navbar>
-      <main className="pt-20 flex-grow"> 
+      <main className="pt-20"> 
         <Outlet></Outlet>
       </main>
       <Footer></Footer>
