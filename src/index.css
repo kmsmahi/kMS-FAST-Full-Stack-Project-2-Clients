@@ -3,19 +3,14 @@
 
 @theme {
   --font-sans: 'Inter', sans-serif;
-  
-  /* KMS FAST Brand Colors & Theme Tokens */
-  --color-primary: #2563eb;
-  --color-primary-focus: #1d4ed8;
-  --color-base-bg: #ffffff;
+  --color-brand-lime: #CAEB66;
+  --color-brand-lime-hover: #b8d655;
 }
 
 body {
   font-family: var(--font-sans);
   background-color: var(--color-base-bg);
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+  
 }
 
 /* Custom smooth scrolling */
