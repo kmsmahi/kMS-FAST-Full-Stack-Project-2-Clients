@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { NavLink } from 'react-router';
 import { motion, AnimatePresence } from 'framer-motion';
 import Logo from '../HomePage/Logo';
- 
 
 const navItems = [
   { name: 'Home', path: '/home' },
@@ -41,8 +40,8 @@ export default function Navbar() {
       transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
         scrolled
-          ? 'bg-[#0B0F19]/85 backdrop-blur-md border-b border-gray-800/60 shadow-lg shadow-black/10 py-3'
-          : 'bg-[#0B0F19] border-b border-transparent py-5'
+          ? 'bg-white/90 backdrop-blur-md border-b border-gray-200/80 shadow-sm py-3'
+          : 'bg-white border-b border-gray-100 py-5'
       }`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -55,15 +54,15 @@ export default function Navbar() {
             aria-label="KMS-FAST Home"
           >
             <div className="w-9 h-9 flex items-center justify-center transition-transform duration-300 group-hover:scale-105">
-              <Logo></Logo>
+              <Logo />
             </div>
-            <span className="text-xl font-bold tracking-tight text-white font-sans -ms-4 pt-3">
-              KMS<span className="text-[#CAEB66]">-FAST</span>
+            <span className="text-xl font-bold tracking-tight text-gray-900 font-sans -ms-4 pt-3">
+              KMS<span className="text-[#96b830] font-extrabold">-FAST</span>
             </span>
           </NavLink>
 
           {/* Desktop Navigation Links */}
-          <nav className="hidden md:flex items-center gap-1 bg-gray-900/60 border border-gray-800/80 px-3 py-1.5 rounded-full shadow-inner">
+          <nav className="hidden md:flex items-center gap-1 bg-gray-50 border border-gray-200/70 px-3 py-1.5 rounded-full shadow-inner">
             {navItems.map((item) => (
               <NavLink
                 key={item.path}
@@ -72,7 +71,7 @@ export default function Navbar() {
                   `relative px-4 py-2 text-sm font-medium transition-colors duration-200 rounded-full focus:outline-none focus:ring-2 focus:ring-[#CAEB66] ${
                     isActive
                       ? 'text-gray-900 bg-[#CAEB66] font-semibold shadow-sm'
-                      : 'text-gray-300 hover:text-white hover:bg-gray-800/60'
+                      : 'text-gray-600 hover:text-gray-900 hover:bg-gray-200/50'
                   }`
                 }
               >
@@ -85,13 +84,13 @@ export default function Navbar() {
           <div className="hidden md:flex items-center gap-3">
             <NavLink
               to="/signin"
-              className="px-4 py-2 text-sm font-medium text-gray-300 hover:text-white transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-[#CAEB66] rounded-lg"
+              className="group relative inline-flex items-center gap-2 px-5 py-2.5 text-sm font-semibold text-gray-900 bg-[#CAEB66] hover:bg-[#b8d655] transition-all duration-200 rounded-full shadow-md hover:shadow-[#CAEB66]/30 focus:outline-none focus:ring-2 focus:ring-[#CAEB66] focus:ring-offset-2 focus:ring-offset-white"
             >
               Sign In
             </NavLink>
             <NavLink
               to="/signup"
-              className="group relative inline-flex items-center gap-2 px-5 py-2.5 text-sm font-semibold text-gray-900 bg-[#CAEB66] hover:bg-[#b8d655] transition-all duration-200 rounded-full shadow-md hover:shadow-[#CAEB66]/20 focus:outline-none focus:ring-2 focus:ring-[#CAEB66] focus:ring-offset-2 focus:ring-offset-[#0B0F19]"
+              className="group relative inline-flex items-center gap-2 px-5 py-2.5 text-sm font-semibold text-gray-900 bg-[#CAEB66] hover:bg-[#b8d655] transition-all duration-200 rounded-full shadow-md hover:shadow-[#CAEB66]/30 focus:outline-none focus:ring-2 focus:ring-[#CAEB66] focus:ring-offset-2 focus:ring-offset-white"
             >
               <span>Sign Up</span>
               <svg
@@ -114,7 +113,7 @@ export default function Navbar() {
               aria-expanded={isOpen}
               aria-controls="mobile-menu"
               aria-label="Toggle navigation menu"
-              className="p-2 text-gray-400 hover:text-white hover:bg-gray-800/60 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#CAEB66]"
+              className="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#CAEB66]"
             >
               <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 {isOpen ? (
@@ -138,7 +137,7 @@ export default function Navbar() {
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
             transition={{ duration: 0.25, ease: 'easeInOut' }}
-            className="md:hidden overflow-hidden bg-[#0B0F19] border-b border-gray-800 px-4 pt-4 pb-6 shadow-2xl"
+            className="md:hidden overflow-hidden bg-white border-b border-gray-200 px-4 pt-4 pb-6 shadow-xl"
           >
             <div className="flex flex-col gap-2">
               {navItems.map((item) => (
@@ -149,8 +148,8 @@ export default function Navbar() {
                   className={({ isActive }) =>
                     `px-4 py-3 rounded-xl text-base font-medium transition-colors ${
                       isActive
-                        ? 'text-[#CAEB66] bg-gray-900/80 font-semibold border-l-4 border-[#CAEB66]'
-                        : 'text-gray-300 hover:bg-gray-800/50 hover:text-white'
+                        ? 'text-gray-900 bg-[#CAEB66]/30 font-semibold border-l-4 border-[#CAEB66]'
+                        : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900'
                     }`
                   }
                 >
@@ -158,11 +157,11 @@ export default function Navbar() {
                 </NavLink>
               ))}
               
-              <div className="border-t border-gray-800 my-3 pt-3 flex flex-col gap-2.5">
+              <div className="border-t border-gray-100 my-3 pt-3 flex flex-col gap-2.5">
                 <NavLink
                   to="/signin"
                   onClick={() => setIsOpen(false)}
-                  className="w-full text-center px-4 py-3 text-sm font-medium text-gray-300 bg-gray-900/60 hover:bg-gray-800 rounded-xl transition-colors"
+                  className="w-full text-center px-4 py-3 text-sm font-medium text-gray-700 bg-gray-50 hover:bg-gray-100 rounded-xl transition-colors"
                 >
                   Sign In
                 </NavLink>
