@@ -3,8 +3,22 @@
 
 @theme {
   --font-sans: 'Inter', sans-serif;
+  
+  /* KMS FAST Brand Colors & Theme Tokens */
+  --color-primary: #2563eb;
+  --color-primary-focus: #1d4ed8;
+  --color-base-bg: #ffffff;
 }
 
 body {
-  font-family: 'Inter', sans-serif;
+  font-family: var(--font-sans);
+  background-color: var(--color-base-bg);
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Custom smooth scrolling */
+html {
+  scroll-behavior: smooth;
 }
