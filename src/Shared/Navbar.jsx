@@ -57,7 +57,7 @@ export default function Navbar() {
             <div className="w-9 h-9 flex items-center justify-center transition-transform duration-300 group-hover:scale-105">
               <Logo></Logo>
             </div>
-            <span className="text-xl font-bold tracking-tight text-white font-sans">
+            <span className="text-xl font-bold tracking-tight text-white font-sans -ms-4 pt-3">
               KMS<span className="text-[#CAEB66]">-FAST</span>
             </span>
           </NavLink>
