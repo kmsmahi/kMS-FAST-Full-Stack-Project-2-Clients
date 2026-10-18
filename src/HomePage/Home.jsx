@@ -10,7 +10,7 @@ import FAQ from './FAQ';
 
 const Home = () => {
     return (
-        <div className='flex flex-col gap-12'>
+        <div className='flex flex-col'>
            <Banner></Banner>
            <PostBanner></PostBanner>
            <OurServices></OurServices>
