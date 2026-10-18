@@ -30,19 +30,19 @@ const steps = [
 
 export default function PostBanner() {
   return (
-    <section className="bg-[#0B0F19] py-20 border-b border-gray-800/80">
+    <section className="bg-white py-16 sm:py-20 border-b border-gray-100">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Section Header */}
-        <div className="text-center max-w-2xl mx-auto mb-16">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-gray-900 border border-gray-800 text-xs font-semibold text-[#CAEB66] mb-4 shadow-sm">
-            <span className="w-2 h-2 rounded-full bg-[#CAEB66] animate-pulse"></span>
+        <div className="text-center max-w-2xl mx-auto mb-12 sm:mb-16">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-gray-50 border border-gray-200 text-xs font-semibold text-gray-800 mb-4 shadow-sm">
+            <span className="w-2 h-2 rounded-full bg-[#96b830] animate-pulse"></span>
             Seamless Workflow
           </div>
-          <h2 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight font-sans">
-            How KMS-FAST Works
+          <h2 className="text-3xl sm:text-4xl font-extrabold text-gray-900 tracking-tight font-sans">
+            How KMS-<span className='text-[#96b830]'>FAST</span> Works
           </h2>
-          <p className="mt-4 text-sm sm:text-base text-gray-400">
+          <p className="mt-4 text-sm sm:text-base text-gray-600 leading-relaxed">
             A streamlined 4-step delivery lifecycle engineered for absolute speed, transparency, and reliability.
           </p>
         </div>
@@ -52,24 +52,28 @@ export default function PostBanner() {
           {steps.map((item, index) => (
             <div
               key={index}
-              className="group relative bg-gray-900/60 hover:bg-gray-900 border border-gray-800 hover:border-[#CAEB66]/50 rounded-2xl p-6 transition-all duration-300 shadow-lg hover:shadow-[#CAEB66]/5 flex flex-col justify-between"
+              className="group relative bg-white hover:bg-gray-50/80 border border-gray-200 hover:border-[#CAEB66] rounded-2xl p-6 transition-all duration-300 shadow-sm hover:shadow-md flex flex-col justify-between"
             >
               {/* Top Row: Icon & Step Number */}
               <div className="flex items-center justify-between mb-6">
-                <div className="w-12 h-12 rounded-xl bg-gray-800/80 border border-gray-700/60 flex items-center justify-center p-2.5 transition-transform duration-300 group-hover:scale-110">
-                  <img src={item.icon} alt={item.title} className="w-full h-full object-contain filter invert brightness-200" />
+                <div className="w-12 h-12 rounded-xl bg-gray-50 border border-gray-200 flex items-center justify-center p-2.5 transition-transform duration-300 group-hover:scale-110 group-hover:border-[#CAEB66]/60">
+                  <img 
+                    src={item.icon} 
+                    alt={item.title} 
+                    className="w-full h-full object-contain" 
+                  />
                 </div>
-                <span className="text-xs font-bold text-gray-600 group-hover:text-[#CAEB66] transition-colors">
+                <span className="text-xs font-bold text-gray-400 group-hover:text-gray-900 transition-colors">
                   {item.step}
                 </span>
               </div>
 
               {/* Content */}
               <div>
-                <h3 className="text-lg font-bold text-white mb-2 group-hover:text-[#CAEB66] transition-colors font-sans">
+                <h3 className="text-lg font-bold text-gray-900 mb-2 font-sans group-hover:text-gray-900 transition-colors">
                   {item.title}
                 </h3>
-                <p className="text-xs sm:text-sm text-gray-400 leading-relaxed">
+                <p className="text-xs sm:text-sm text-gray-600 leading-relaxed">
                   {item.description}
                 </p>
               </div>
