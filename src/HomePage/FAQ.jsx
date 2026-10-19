@@ -31,7 +31,7 @@ export default function FAQ() {
   };
 
   return (
-    <section className="bg-white py-16 sm:py-24 border-b border-gray-100 relative overflow-hidden bg-base-200">
+    <section className=" py-16 sm:py-24 border-b border-gray-100 relative overflow-hidden bg-slate-50/70">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Section Header */}
