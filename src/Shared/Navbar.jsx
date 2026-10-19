@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import Logo from '../HomePage/Logo';
 
 const navItems = [
-  { name: 'Home', path: '/home' },
+  { name: 'Home', path: '/' },
   { name: 'Coverage', path: '/coverage' },
   { name: 'About Us', path: '/aboutus' },
   { name: 'Pricing', path: '/pricing' },
@@ -68,7 +68,7 @@ export default function Navbar() {
                 key={item.path}
                 to={item.path}
                 className={({ isActive }) =>
-                  `relative px-4 py-2 text-sm font-medium transition-colors duration-200 rounded-full focus:outline-none focus:ring-2 focus:ring-[#CAEB66] ${
+                  `relative px-4 py-4 text-sm font-medium transition-colors duration-200 rounded-full focus:outline-none focus:ring-2 focus:ring-[#CAEB66] ${
                     isActive
                       ? 'text-gray-900 bg-[#CAEB66] font-semibold shadow-sm'
                       : 'text-gray-600 hover:text-gray-900 hover:bg-gray-200/50'
@@ -146,7 +146,7 @@ export default function Navbar() {
                   to={item.path}
                   onClick={() => setIsOpen(false)}
                   className={({ isActive }) =>
-                    `px-4 py-3 rounded-xl text-base font-medium transition-colors ${
+                    `px-4 py-2 rounded-xl text-base font-medium transition-colors ${
                       isActive
                         ? 'text-gray-900 bg-[#CAEB66]/30 font-semibold border-l-4 border-[#CAEB66]'
                         : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900'
