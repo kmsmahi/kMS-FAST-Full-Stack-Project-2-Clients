@@ -1,0 +1,98 @@
+[
+  {
+    "id": 1,
+    "name": "Tanvir Ahmed",
+    "position": "E-commerce Owner",
+    "place": "Dhaka",
+    "review": "KMS-FAST has completely transformed my online business fulfillment. Their same-day delivery in Dhaka is lightning fast, and my customers love it!",
+    "image": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=250"
+  },
+  {
+    "id": 2,
+    "name": "Nusrat Jahan",
+    "position": "Boutique Founder",
+    "place": "Chittagong",
+    "review": "Handling fragile clothing items used to be stressful, but KMS-FAST ensures 100% safe and damage-free delivery every single time. Highly recommended!",
+    "image": "https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&q=80&w=250"
+  },
+  {
+    "id": 3,
+    "name": "Mahmudul Hasan",
+    "position": "Online Shop Manager",
+    "place": "Sylhet",
+    "review": "Their nationwide delivery to Sylhet and surrounding districts is remarkably reliable. Plus, their Cash on Delivery settlement is always on time.",
+    "image": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=250"
+  },
+  {
+    "id": 4,
+    "name": "Farhana Akter",
+    "position": "Fashion Designer",
+    "place": "Rajshahi",
+    "review": "The reverse logistics and return facility is a game-changer. It makes product exchanges with my customers seamless and totally hassle-free.",
+    "image": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=250"
+  },
+  {
+    "id": 5,
+    "name": "Rashedul Islam",
+    "position": "Electronics Merchant",
+    "place": "Khulna",
+    "review": "Customer support is top-notch! Whenever I have a tracking query or delivery update, their 24/7 team responds instantly.",
+    "image": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&q=80&w=250"
+  },
+  {
+    "id": 6,
+    "name": "Sadia Sultana",
+    "position": "Cosmetic Store Owner",
+    "place": "Comilla",
+    "review": "Low delivery charges with high service value! KMS-FAST helps me keep my shipping costs low while maintaining premium delivery standards.",
+    "image": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=250"
+  },
+  {
+    "id": 7,
+    "name": "Al-Amin Hossain",
+    "position": "Book Publisher",
+    "place": "Barisal",
+    "review": "Delivering books securely across 64 districts was difficult before we partnered with KMS-FAST. Now, orders reach readers safely within 48 hours.",
+    "image": "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&q=80&w=250"
+  },
+  {
+    "id": 8,
+    "name": "Mehjabin Chowdhury",
+    "position": "Handicraft Seller",
+    "place": "Cox's Bazar",
+    "review": "The live tracking feature gives both me and my buyers complete peace of mind from pickup all the way to final drop-off.",
+    "image": "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&q=80&w=250"
+  },
+  {
+    "id": 9,
+    "name": "Imtiaz Ahmed",
+    "position": "Retail & Grocery Owner",
+    "place": "Gazipur",
+    "review": "Their corporate fulfillment solutions and inventory management support have scaled our business operations beyond expectations.",
+    "image": "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&q=80&w=250"
+  },
+  {
+    "id": 10,
+    "name": "Tanzina Rahman",
+    "position": "Jewelry Designer",
+    "place": "Uttara, Dhaka",
+    "review": "Secure handling of high-value items is critical for my jewelry brand. KMS-FAST handles every parcel with professional care.",
+    "image": "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&q=80&w=250"
+  },
+  {
+    "id": 11,
+    "name": "Arifur Rahman",
+    "position": "IT Equipment Supplier",
+    "place": "Agrabad, Chittagong",
+    "review": "Reliable pickup scheduling from our warehouse and transparent COD settlement makes KMS-FAST our preferred logistics partner.",
+    "image": "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&q=80&w=250"
+  },
+  {
+    "id": 12,
+    "name": "Lamia Tabassum",
+    "position": "Organic Food Startup Founder",
+    "place": "Dhanmondi, Dhaka",
+    "review": "Fast express delivery is vital for our perishable items. KMS-FAST delivers within 4–6 hours in Dhaka without fail!",
+    "image": "https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?auto=format&fit=crop&q=80&w=250"
+  }
+]
