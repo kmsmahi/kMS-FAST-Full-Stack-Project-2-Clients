@@ -5,6 +5,8 @@ import { FcGoogle } from "react-icons/fc";
 import UseAuth from "../Hooks/UseAuth";
 import { FaRegEye } from "react-icons/fa";
 import { FaRegEyeSlash } from "react-icons/fa6";
+import { sendPasswordResetEmail } from 'firebase/auth/cordova';
+import { auth } from '../firebase/firebase.config';
 const Login = () => {
     const { register, handleSubmit, formState: { errors } } = useForm();
     const { signinUser, googleSignIn } = UseAuth();
@@ -16,6 +18,11 @@ const Login = () => {
     const [loading, setLoading] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
     const [showPassword, setShowPassword] = useState(false);
+    const [isForgotModalOpen, setIsForgotModalOpen] = useState(false);
+    const [resetEmail, setResetEmail] = useState('');
+    const [resetMessage, setResetMessage] = useState('');
+    const [resetError, setResetError] = useState('');
+    const [resetLoading, setResetLoading] = useState(false);
     // Email & Password Login Handler
     const loginBtnHandler = async (data) => {
         setLoading(true);
@@ -36,6 +43,34 @@ const Login = () => {
             setLoading(false);
         }
     };
+
+    // forgot password handler
+
+    const handlePasswordReset = async (e) => {
+    e.preventDefault();
+    if (!resetEmail) {
+        setResetError("Please enter your email address.");
+        return;
+    }
+    setResetLoading(true);
+    setResetError('');
+    setResetMessage('');
+
+    try {
+        await sendPasswordResetEmail(auth, resetEmail);
+        setResetMessage("Password reset email sent! Check your inbox.");
+        setResetEmail('');
+    } catch (err) {
+        console.error(err);
+        if (err.code === 'auth/user-not-found') {
+            setResetError("No account found with this email address.");
+        } else {
+            setResetError(err.message || "Failed to send reset email.");
+        }
+    } finally {
+        setResetLoading(false);
+    }
+};
 
     // Google Sign-In Handler
     const handleGoogleLogin = async () => {
@@ -83,28 +118,41 @@ const Login = () => {
                     </div>
 
                     {/* Input container with relative positioning for eye icon */}
-                        <div className="relative flex items-center">
-                            <input 
-                                type={showPassword ? "text" : "password"} 
-                                {...register('password', { required: true })} 
-                                className="w-full px-4 py-3 pr-10 text-sm bg-gray-50/50 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#CAEB66] transition-all" 
-                                placeholder="••••••••" 
-                            />
-                            
-                            {/* Toggle Button */}
-                            <button
-                                type="button"
-                                onClick={() => setShowPassword(!showPassword)}
-                                className="absolute right-3.5 text-gray-500 hover:text-gray-800 transition-colors focus:outline-none cursor-pointer"
-                                aria-label={showPassword ? "Hide password" : "Show password"}
-                            >
-                                {showPassword ? (
-                                    <FaRegEye className="w-4 h-4" />
-                                ) : (
-                                    <FaRegEyeSlash className="w-4 h-4" />
-                                )}
-                            </button>
-                        </div>
+                        <div>
+    <div className="flex items-center justify-between mb-1.5">
+        <label className="block text-xs font-semibold text-gray-700">Password</label>
+        <button
+            type="button" 
+            onClick={() => setIsForgotModalOpen(true)}
+            className="text-xs font-semibold text-[#96b830] hover:underline bg-transparent border-none cursor-pointer p-0"
+        >
+            Forgot password?
+        </button>
+    </div>
+
+    <div className="relative flex items-center">
+        <input 
+            type={showPassword ? "text" : "password"} 
+            {...register('password', { required: true })} 
+            className="w-full px-4 py-3 pr-10 text-sm bg-gray-50/50 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#CAEB66] transition-all" 
+            placeholder="••••••••" 
+        />
+        
+        <button
+            type="button"
+            onClick={() => setShowPassword(!showPassword)}
+            className="absolute right-3.5 text-gray-500 hover:text-gray-800 transition-colors focus:outline-none cursor-pointer"
+            aria-label={showPassword ? "Hide password" : "Show password"}
+        >
+            {showPassword ? (
+                <FaRegEyeSlash className="w-4 h-4" />
+            ) : (
+                <FaRegEye className="w-4 h-4" />
+            )}
+        </button>
+    </div>
+    {errors.password && <p className="text-red-500 text-xs mt-1">Password is required.</p>}
+</div>
 
                     {/* Submit Button */}
                     <button 
@@ -148,6 +196,74 @@ const Login = () => {
                 </div>
 
             </div>
+
+            {/* --- FORGOT PASSWORD MODAL --- */}
+{isForgotModalOpen && (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
+        <div className="bg-white rounded-3xl p-6 sm:p-8 max-w-md w-full shadow-2xl border border-gray-100 relative">
+            <button
+                onClick={() => {
+                    setIsForgotModalOpen(false);
+                    setResetError('');
+                    setResetMessage('');
+                }}
+                className="absolute top-5 right-5 text-gray-400 hover:text-gray-700 p-1 rounded-full hover:bg-gray-100 transition-colors cursor-pointer"
+            >
+                ✕
+            </button>
+
+            <h2 className="text-xl font-bold text-gray-900 mb-1">Reset Password</h2>
+            <p className="text-xs text-gray-500 mb-4">Enter your account email and we'll send you a link to reset your password.</p>
+
+            {resetError && (
+                <div className="p-3 mb-3 rounded-xl bg-red-50 border border-red-200 text-xs text-red-600 font-medium">
+                    {resetError}
+                </div>
+            )}
+
+            {resetMessage && (
+                <div className="p-3 mb-3 rounded-xl bg-green-50 border border-green-200 text-xs text-green-700 font-medium">
+                    {resetMessage}
+                </div>
+            )}
+
+            <form onSubmit={handlePasswordReset} className="space-y-4">
+                <div>
+                    <label className="block text-xs font-semibold text-gray-700 mb-1.5">Email Address</label>
+                    <input
+                        type="email"
+                        value={resetEmail}
+                        onChange={(e) => setResetEmail(e.target.value)}
+                        className="w-full px-4 py-3 text-sm bg-gray-50 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#CAEB66]"
+                        placeholder="name@example.com"
+                        required
+                    />
+                </div>
+
+                <div className="flex items-center justify-end gap-3 pt-2">
+                    <button
+                        type="button"
+                        onClick={() => {
+                            setIsForgotModalOpen(false);
+                            setResetError('');
+                            setResetMessage('');
+                        }}
+                        className="px-4 py-2.5 text-xs font-semibold text-gray-600 hover:bg-gray-100 rounded-2xl transition-colors cursor-pointer"
+                    >
+                        Cancel
+                    </button>
+                    <button
+                        type="submit"
+                        disabled={resetLoading}
+                        className="px-5 py-2.5 text-xs font-bold text-gray-900 bg-[#CAEB66] hover:bg-[#b8d655] rounded-2xl shadow-sm transition-all disabled:opacity-50 cursor-pointer"
+                    >
+                        {resetLoading ? "Sending Link..." : "Send Reset Link"}
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+)}
         </div>
     );
 };
