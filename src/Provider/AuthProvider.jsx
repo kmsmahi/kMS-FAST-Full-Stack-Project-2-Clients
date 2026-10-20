@@ -36,11 +36,15 @@ const AuthProvider = ({ children }) => {
         return signOut(auth);
     };
 
-    const updateUserProfile = (name, photoURL) => {
-        return updateProfile(auth.currentUser, {
+    // Updated profile function with local state synchronization
+    const updateUserProfile = async (name, photoURL) => {
+        await updateProfile(auth.currentUser, {
             displayName: name,
             photoURL: photoURL
         });
+        
+        // Instantly force local React state to update user info
+        setUser({ ...auth.currentUser });
     };
 
     useEffect(() => {
