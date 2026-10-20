@@ -9,6 +9,7 @@ import AuthLayout from "../Layouts/AuthLayout";
 import Login from "../AuthPage/Login";
 // import Logout from "../AuthPage/Logout";
 import Register from "../AuthPage/Register";
+import PrivateRoute from "../AuthPage/PrivateRoute";
 
 
 
@@ -33,11 +34,15 @@ export const router = createBrowserRouter([
       },
       {
         path:'/pricing',
-        element:<Pricing></Pricing>
+        element:<PrivateRoute>
+          <Pricing></Pricing>
+        </PrivateRoute>
       },
       {
         path:'/bearider',
-        element:<BeARider></BeARider>
+        element:<PrivateRoute>
+          <BeARider></BeARider>
+        </PrivateRoute>
       },
     ]
   },

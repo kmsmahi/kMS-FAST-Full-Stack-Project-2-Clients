@@ -5,7 +5,7 @@ import Logo from '../HomePage/Logo';
 import UseAuth from '../Hooks/UseAuth';
 import { useForm } from 'react-hook-form';
 
-const navItems = [
+const allNavItems = [
   { name: 'Home', path: '/' },
   { name: 'Coverage', path: '/coverage' },
   { name: 'About Us', path: '/aboutus' },
@@ -23,6 +23,10 @@ export default function Navbar() {
   const [updating, setUpdating] = useState(false);
   const [updateError, setUpdateError] = useState('');
   const { register, handleSubmit, reset } = useForm();
+
+  // Filter nav items based on user authentication status
+  // If user is not logged in, show only the first 3 items. If logged in, show all.
+  const navItems = user ? allNavItems : allNavItems.slice(0, 3);
 
   // Handle scroll shadow & background elevation
   useEffect(() => {
@@ -130,7 +134,7 @@ export default function Navbar() {
               </span>
             </NavLink>
 
-            {/* Desktop Navigation Links */}
+            {/* Desktop Navigation Links (Dynamically filtered) */}
             <nav className="hidden md:flex items-center gap-1 bg-gray-50 border border-gray-200/70 px-3 py-1.5 rounded-full shadow-inner">
               {navItems.map((item) => (
                 <NavLink
@@ -342,7 +346,7 @@ export default function Navbar() {
               {/* Close Button */}
               <button
                 onClick={() => setIsProfileModalOpen(false)}
-                className="absolute top-5 right-5 text-gray-400 hover:text-gray-700 p-1 rounded-full hover:bg-gray-100 transition-colors"
+                className="absolute top-5 right-5 text-gray-400 hover:text-gray-700 p-1 rounded-full hover:bg-gray-100 transition-colors cursor-pointer"
               >
                 <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
@@ -387,7 +391,7 @@ export default function Navbar() {
                   <button
                     type="button"
                     onClick={() => setIsProfileModalOpen(false)}
-                    className="px-5 py-2.5 text-xs font-semibold text-gray-600 hover:bg-gray-100 rounded-2xl transition-colors"
+                    className="px-5 py-2.5 text-xs font-semibold text-gray-600 hover:bg-gray-100 rounded-2xl transition-colors cursor-pointer"
                   >
                     Cancel
                   </button>
