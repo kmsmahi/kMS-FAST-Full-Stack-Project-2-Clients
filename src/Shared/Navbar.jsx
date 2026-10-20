@@ -51,7 +51,7 @@ export default function Navbar() {
           
           {/* Brand Logo & Name */}
           <NavLink
-            to="/home"
+            to="/aboutus"
             className="flex items-center gap-3 group focus:outline-none focus:ring-2 focus:ring-[#CAEB66] rounded-lg p-1"
             aria-label="KMS-FAST Home"
           >
@@ -85,13 +85,13 @@ export default function Navbar() {
           {/* Action Buttons (Sign In / Sign Up) */}
           <div className="hidden md:flex items-center gap-3">
             <NavLink
-              to="/signin"
+              to="/login"
               className="group relative inline-flex items-center gap-2 px-5 py-2.5 text-sm font-semibold text-gray-900 bg-[#CAEB66] hover:bg-[#b8d655] transition-all duration-200 rounded-full shadow-md hover:shadow-[#CAEB66]/30 focus:outline-none focus:ring-2 focus:ring-[#CAEB66] focus:ring-offset-2 focus:ring-offset-white"
             >
               Sign In
             </NavLink>
             <NavLink
-              to="/signup"
+              to="/register"
               className="group relative inline-flex items-center gap-2 px-5 py-2.5 text-sm font-semibold text-gray-900 bg-[#CAEB66] hover:bg-[#b8d655] transition-all duration-200 rounded-full shadow-md hover:shadow-[#CAEB66]/30 focus:outline-none focus:ring-2 focus:ring-[#CAEB66] focus:ring-offset-2 focus:ring-offset-white"
             >
               <span>Sign Up</span>
@@ -161,14 +161,14 @@ export default function Navbar() {
               
               <div className="border-t border-gray-100 my-3 pt-3 flex flex-col gap-2.5">
                 <NavLink
-                  to="/signin"
+                  to="/login"
                   onClick={() => setIsOpen(false)}
                   className="w-full text-center px-4 py-3 text-sm font-medium text-gray-700 bg-gray-50 hover:bg-gray-100 rounded-xl transition-colors"
                 >
                   Sign In
                 </NavLink>
                 <NavLink
-                  to="/signup"
+                  to="/register"
                   onClick={() => setIsOpen(false)}
                   className="w-full flex items-center justify-center gap-2 px-4 py-3 text-sm font-semibold text-gray-900 bg-[#CAEB66] hover:bg-[#b8d655] rounded-xl transition-colors shadow-sm"
                 >
