@@ -3,7 +3,8 @@ import { useForm } from "react-hook-form";
 import { Link, useLocation, useNavigate } from "react-router";
 import { FcGoogle } from "react-icons/fc";
 import UseAuth from "../Hooks/UseAuth";
-
+import { FaRegEye } from "react-icons/fa";
+import { FaRegEyeSlash } from "react-icons/fa6";
 const Login = () => {
     const { register, handleSubmit, formState: { errors } } = useForm();
     const { signinUser, googleSignIn } = UseAuth();
@@ -14,7 +15,7 @@ const Login = () => {
 
     const [loading, setLoading] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
-
+    const [showPassword, setShowPassword] = useState(false);
     // Email & Password Login Handler
     const loginBtnHandler = async (data) => {
         setLoading(true);
@@ -81,25 +82,29 @@ const Login = () => {
                         {errors.email && <p className="text-red-500 text-xs mt-1">Email is required.</p>}
                     </div>
 
-                    {/* Password Field */}
-                    <div>
-                        <div className="flex items-center justify-between mb-1.5">
-                            <label className="block text-xs font-semibold text-gray-700">Password</label>
-                            <Link 
-                                to="#" 
-                                className="text-xs font-semibold text-[#96b830] hover:underline"
+                    {/* Input container with relative positioning for eye icon */}
+                        <div className="relative flex items-center">
+                            <input 
+                                type={showPassword ? "text" : "password"} 
+                                {...register('password', { required: true })} 
+                                className="w-full px-4 py-3 pr-10 text-sm bg-gray-50/50 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#CAEB66] transition-all" 
+                                placeholder="••••••••" 
+                            />
+                            
+                            {/* Toggle Button */}
+                            <button
+                                type="button"
+                                onClick={() => setShowPassword(!showPassword)}
+                                className="absolute right-3.5 text-gray-500 hover:text-gray-800 transition-colors focus:outline-none cursor-pointer"
+                                aria-label={showPassword ? "Hide password" : "Show password"}
                             >
-                                Forgot password?
-                            </Link>
+                                {showPassword ? (
+                                    <FaRegEye className="w-4 h-4" />
+                                ) : (
+                                    <FaRegEyeSlash className="w-4 h-4" />
+                                )}
+                            </button>
                         </div>
-                        <input 
-                            type="password" 
-                            {...register('password', { required: true })} 
-                            className="w-full px-4 py-3 text-sm bg-gray-50/50 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#CAEB66] transition-all" 
-                            placeholder="••••••••" 
-                        />
-                        {errors.password && <p className="text-red-500 text-xs mt-1">Password is required.</p>}
-                    </div>
 
                     {/* Submit Button */}
                     <button 

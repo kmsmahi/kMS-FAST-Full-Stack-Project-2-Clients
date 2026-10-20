@@ -3,14 +3,15 @@ import { useForm } from "react-hook-form";
 import UseAuth from "../Hooks/UseAuth";
 import { Link, useNavigate } from "react-router";
 import { FcGoogle } from "react-icons/fc"; 
-
+import { FaRegEye } from "react-icons/fa";
+import { FaRegEyeSlash } from "react-icons/fa6";
 const Register = () => {
     const { register, handleSubmit, formState: { errors } } = useForm();
     const { registerUser, updateUserProfile, googleSignIn } = UseAuth();
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
-
+    const [showPassword, setShowPassword] = useState(false);
     // ImgBB Upload Helper function
     const uploadImageToImgBB = async (imageFile) => {
         const formData = new FormData();
@@ -120,21 +121,44 @@ const Register = () => {
 
                     {/* Password Field */}
                     <div>
-                        <label className="block text-xs font-semibold text-gray-700 mb-1.5">Password</label>
-                        <input 
-                            type="password" 
-                            {...register('password', {
-                                required: true,
-                                minLength: 6,
-                                pattern: /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[^A-Za-z0-9]).+$/
-                            })} 
-                            className="w-full px-4 py-3 text-sm bg-gray-50/50 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#CAEB66] transition-all" 
-                            placeholder="••••••••" 
-                        />
-                        {errors.password?.type === 'required' && <p className="text-red-500 text-xs mt-1">Password is required.</p>}
-                        {errors.password?.type === 'minLength' && <p className="text-red-500 text-xs mt-1">Password must be 6+ characters.</p>}
-                        {errors.password?.type === 'pattern' && <p className="text-red-500 text-xs mt-1">Include uppercase, lowercase, number & special character.</p>}
-                    </div>
+    <div className="flex items-center justify-between mb-1.5">
+        <label className="block text-xs font-semibold text-gray-700">Password</label>
+        <Link 
+            to="#" 
+            className="text-xs font-semibold text-[#96b830] hover:underline"
+        >
+            Forgot password?
+        </Link>
+    </div>
+
+    {/* Input container with relative positioning for eye icon */}
+    <div className="relative flex items-center">
+        <input 
+            type={showPassword ? "text" : "password"} 
+            {...register('password', { required: true })} 
+            className="w-full px-4 py-3 pr-10 text-sm bg-gray-50/50 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#CAEB66] transition-all" 
+            placeholder="••••••••" 
+        />
+        
+        {/* Toggle Button */}
+        <button
+            type="button"
+            onClick={() => setShowPassword(!showPassword)}
+            className="absolute right-3.5 text-gray-500 hover:text-gray-800 transition-colors focus:outline-none cursor-pointer"
+            aria-label={showPassword ? "Hide password" : "Show password"}
+        >
+            {showPassword ? (
+                <FaRegEye className="w-4 h-4" />
+            ) : (
+                <FaRegEyeSlash className="w-4 h-4" />
+            )}
+        </button>
+    </div>
+
+    {errors.password && (
+        <p className="text-red-500 text-xs mt-1">Password is required.</p>
+    )}
+</div>
 
                     {/* Submit Button */}
                     <button 

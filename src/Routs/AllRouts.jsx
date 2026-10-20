@@ -7,7 +7,7 @@ import Pricing from "../Navigation/Pricing";
 import BeARider from "../Navigation/BeARider";
 import AuthLayout from "../Layouts/AuthLayout";
 import Login from "../AuthPage/Login";
-import Logout from "../AuthPage/Logout";
+// import Logout from "../AuthPage/Logout";
 import Register from "../AuthPage/Register";
 
 
@@ -50,10 +50,10 @@ export const router = createBrowserRouter([
         path:'/login',
         element:<Login></Login>
       },
-      {
-        path:'/logout',
-        element:<Logout></Logout>
-      },
+      // {
+      //   path:'/logout',
+      //   element:<Logout></Logout>
+      // },
       {
         path:'/register',
         element:<Register></Register>
