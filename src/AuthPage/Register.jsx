@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useForm } from "react-hook-form";
 import UseAuth from "../Hooks/UseAuth";
 import { Link, useNavigate } from "react-router";
-import { FcGoogle } from "react-icons/fc"; // Make sure react-icons is imported for the icon
+import { FcGoogle } from "react-icons/fc"; 
 
 const Register = () => {
     const { register, handleSubmit, formState: { errors } } = useForm();
