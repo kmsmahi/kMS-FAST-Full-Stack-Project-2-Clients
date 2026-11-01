@@ -370,7 +370,7 @@ export default function Navbar() {
                     type="text"
                     defaultValue={user?.displayName || ''}
                     {...register('name')}
-                    className="w-full px-4 py-3 text-sm bg-gray-50 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#CAEB66]"
+                    className="w-full px-4 py-3 text-sm bg-gray-50 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#bfe451]"
                     placeholder="Enter your name"
                   />
                 </div>
