@@ -11,6 +11,7 @@ const allNavItems = [
   { name: 'About Us', path: '/aboutus' },
   { name: 'Pricing', path: '/pricing' },
   { name: 'Be a Rider', path: '/bearider' },
+  { name: 'Send Parcel', path: '/send-Parcel' },
 ];
 
 export default function Navbar() {

@@ -10,6 +10,7 @@ import Login from "../AuthPage/Login";
 // import Logout from "../AuthPage/Logout";
 import Register from "../AuthPage/Register";
 import PrivateRoute from "../AuthPage/PrivateRoute";
+import SendParcel from "../Navigation/SendParcel";
 
 
 
@@ -43,6 +44,14 @@ export const router = createBrowserRouter([
         element:<PrivateRoute>
           <BeARider></BeARider>
         </PrivateRoute>
+      },
+      {
+        path:'/send-parcel',
+        element:<PrivateRoute>
+          <SendParcel></SendParcel>
+        </PrivateRoute>,
+        loader:()=>fetch('/warehouses.json')
+        .then(res=>res.json()),
       },
     ]
   },
