@@ -1,10 +1,11 @@
 import React from 'react';
 import { useForm, useWatch } from 'react-hook-form';
 import { useLoaderData } from 'react-router';
-import { FiBox, FiUser, FiMapPin, FiPhone, FiFileText } from 'react-icons/fi';
+import { FiBox, FiUser, FiMapPin, FiFileText, FiDollarSign } from 'react-icons/fi';
+import Swal from 'sweetalert2';
 
 const SendParcel = () => {
-    const { register, handleSubmit, control, formState: { errors } } = useForm({
+    const { register, handleSubmit, control, reset, formState: { errors } } = useForm({
         defaultValues: {
             parcelType: 'Document'
         }
@@ -15,9 +16,13 @@ const SendParcel = () => {
     // Extract unique regions safely
     const regions = [...new Set(serviceCenters.map((r) => r.region))];
 
-    // Watch region selections for dynamic district filtering
+    // Watch values for dynamic pricing and district filtering
     const senderRegion = useWatch({ control, name: 'senderRegion' });
     const receiverRegion = useWatch({ control, name: 'receiverRegion' });
+    const parcelType = useWatch({ control, name: 'parcelType' });
+    const senderDistrict = useWatch({ control, name: 'senderDistrict' });
+    const receiverDistrict = useWatch({ control, name: 'receiverDistrict' });
+    const parcelWeight = useWatch({ control, name: 'parcelWeight' });
 
     const districtsByRegion = (region) => {
         if (!region) return [];
@@ -26,19 +31,106 @@ const SendParcel = () => {
             .map((d) => d.district);
     };
 
+    // --- PRICING CALCULATION LOGIC ---
+    const calculateCost = () => {
+        const weight = parseFloat(parcelWeight) || 0;
+        const isWithinCity = senderDistrict && receiverDistrict && senderDistrict === receiverDistrict;
+
+        let baseCost = 0;
+        let calculationDetails = '';
+
+        if (parcelType === 'Document') {
+            baseCost = isWithinCity ? 60 : 80;
+            calculationDetails = isWithinCity ? 'Document (Within City)' : 'Document (Outside City/District)';
+        } else {
+            // Non-Document
+            if (weight <= 3) {
+                baseCost = isWithinCity ? 110 : 150;
+                calculationDetails = isWithinCity ? 'Non-Document up to 3kg (Within City)' : 'Non-Document up to 3kg (Outside City)';
+            } else {
+                const extraKg = Math.ceil(weight - 3);
+                if (isWithinCity) {
+                    baseCost = 110 + (extraKg * 40);
+                    calculationDetails = `Non-Document > 3kg (Base ৳110 + ৳40 × ${extraKg} extra kg)`;
+                } else {
+                    baseCost = 150 + (extraKg * 40) + 40;
+                    calculationDetails = `Non-Document > 3kg (Base ৳150 + ৳40 × ${extraKg} extra kg + ৳40 extra fee)`;
+                }
+            }
+        }
+        return { baseCost, calculationDetails, isWithinCity };
+    };
+
+    const { baseCost, calculationDetails, isWithinCity } = calculateCost();
+
+    // --- FORM SUBMISSION WITH SWEETALERT MODAL ---
     const onSubmit = (data) => {
-        console.log('Parcel Submission Data:', data);
-        alert('Parcel submission simulated successfully!');
+        const costInfo = calculateCost();
+
+        Swal.fire({
+            title: '<span class="text-xl font-bold text-gray-900">Confirm Parcel Booking</span>',
+            html: `
+                <div class="text-left bg-gray-50 p-4 rounded-2xl border border-gray-200 text-xs space-y-2 mt-2">
+                    <p><strong>Parcel Name:</strong> ${data.parcelName}</p>
+                    <p><strong>Type & Weight:</strong> ${data.parcelType} (${data.parcelWeight} kg)</p>
+                    <p><strong>Route:</strong> ${data.senderDistrict} ➔ ${data.receiverDistrict} (${costInfo.isWithinCity ? 'Within City' : 'Outside City'})</p>
+                    <hr class="border-gray-200 my-1"/>
+                    <p><strong>Calculation:</strong> ${costInfo.calculationDetails}</p>
+                    <p class="text-sm font-bold text-[#96b830] pt-1">Total Cost: ৳${costInfo.baseCost}</p>
+                </div>
+            `,
+            icon: 'info',
+            showCancelButton: true,
+            confirmButtonColor: '#CAEB66',
+            cancelButtonColor: '#f3f4f6',
+            confirmButtonText: '<span class="text-gray-900 font-bold">Proceed to Payment / Send</span>',
+            cancelButtonText: '<span class="text-gray-600 font-semibold">Cancel</span>',
+            customClass: {
+                popup: 'rounded-3xl',
+                confirmButton: 'rounded-2xl px-5 py-3 hover:bg-[#b8d655]',
+                cancelButton: 'rounded-2xl px-5 py-3 text-gray-700'
+            }
+        }).then((result) => {
+            if (result.isConfirmed) {
+                console.log('Final Submission Data:', { ...data, cost: costInfo.baseCost });
+                
+                // Success Alert & Reset Form
+                Swal.fire({
+                    title: 'Success!',
+                    text: 'Your parcel has been booked successfully!',
+                    icon: 'success',
+                    confirmButtonColor: '#CAEB66',
+                    customClass: { popup: 'rounded-3xl', confirmButton: 'rounded-2xl px-5 py-3 text-gray-900 font-bold' }
+                });
+
+                // Reset the form fields and price back to default
+                reset({
+                    parcelType: 'Document',
+                    parcelName: '',
+                    parcelWeight: '',
+                    senderName: '',
+                    senderAddress: '',
+                    senderPhone: '',
+                    senderRegion: '',
+                    senderDistrict: '',
+                    receiverName: '',
+                    receiverAddress: '',
+                    receiverPhone: '',
+                    receiverRegion: '',
+                    receiverDistrict: ''
+                });
+            }
+        });
     };
 
     return (
-        <div className="min-h-screen bg-white pt-28 pb-16 px-4 sm:px-6 lg:px-8">
+        <div className="min-h-screen bg-white pt-10 pb-16 px-4 sm:px-6 lg:px-8">
             <div className="max-w-5xl mx-auto space-y-8">
                 
                 {/* Header */}
                 <div className="text-center sm:text-left space-y-1">
                     <h1 className="text-3xl font-extrabold text-gray-900 tracking-tight">Send a Parcel</h1>
-                    <p className="text-sm text-gray-500">Fill in the shipment and location details below</p>
+                    <p className="text-sm text-gray-500">Fill in shipment details & calculate your delivery cost instantly</p>
                 </div>
 
                 {/* Main Form Card */}
@@ -54,7 +146,6 @@ const SendParcel = () => {
                                     value="Document" 
                                     {...register('parcelType')} 
                                     className="radio radio-sm accent-[#96b830]" 
-                                    defaultChecked 
                                 />
                                 <span className="text-sm font-medium text-gray-800 flex items-center gap-2">
                                     <FiFileText className="text-[#96b830]" /> Document
@@ -142,11 +233,10 @@ const SendParcel = () => {
                                 />
                             </div>
 
-                            {/* Sender Region */}
                             <div>
                                 <label className="block text-xs font-semibold text-gray-700 mb-1">Region</label>
                                 <select 
-                                    defaultValue="" 
+                                    value={senderRegion || ""} 
                                     {...register('senderRegion', { required: true })}
                                     className="w-full px-4 py-2.5 text-sm bg-gray-50/50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#CAEB66]"
                                 >
@@ -157,11 +247,10 @@ const SendParcel = () => {
                                 </select>
                             </div>
 
-                            {/* Sender District */}
                             <div>
                                 <label className="block text-xs font-semibold text-gray-700 mb-1">District</label>
                                 <select 
-                                    defaultValue="" 
+                                    value={senderDistrict || ""} 
                                     {...register('senderDistrict', { required: true })} 
                                     className="w-full px-4 py-2.5 text-sm bg-gray-50/50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#CAEB66]"
                                 >
@@ -210,11 +299,10 @@ const SendParcel = () => {
                                 />
                             </div>
 
-                            {/* Receiver Region */}
                             <div>
                                 <label className="block text-xs font-semibold text-gray-700 mb-1">Region</label>
                                 <select 
-                                    defaultValue="" 
+                                    value={receiverRegion || ""} 
                                     {...register('receiverRegion', { required: true })}
                                     className="w-full px-4 py-2.5 text-sm bg-gray-50/50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#CAEB66]"
                                 >
@@ -225,11 +313,10 @@ const SendParcel = () => {
                                 </select>
                             </div>
 
-                            {/* Receiver District */}
                             <div>
                                 <label className="block text-xs font-semibold text-gray-700 mb-1">District</label>
                                 <select 
-                                    defaultValue="" 
+                                    value={receiverDistrict || ""} 
                                     {...register('receiverDistrict', { required: true })} 
                                     className="w-full px-4 py-2.5 text-sm bg-gray-50/50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#CAEB66]"
                                 >
@@ -243,13 +330,29 @@ const SendParcel = () => {
 
                     </div>
 
+                    {/* --- LIVE COST ESTIMATE BANNER --- */}
+                    <div className="bg-[#CAEB66]/15 border border-[#CAEB66]/50 rounded-2xl p-5 flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 rounded-xl bg-[#CAEB66] flex items-center justify-center text-gray-900 font-bold">
+                                <FiDollarSign className="w-5 h-5" />
+                            </div>
+                            <div>
+                                <h4 className="text-xs font-bold uppercase tracking-wider text-gray-700">Estimated Shipping Cost</h4>
+                                <p className="text-xs text-gray-500">{calculationDetails || "Select districts and weight to calculate"}</p>
+                            </div>
+                        </div>
+                        <div className="text-2xl font-extrabold text-gray-900">
+                            ৳{baseCost}
+                        </div>
+                    </div>
+
                     {/* Submit Button */}
-                    <div className="pt-4">
+                    <div className="pt-2">
                         <button 
                             type="submit" 
                             className="w-full py-4 bg-[#CAEB66] hover:bg-[#b8d655] text-gray-900 font-bold text-sm rounded-2xl transition-all shadow-sm cursor-pointer"
                         >
-                            Confirm & Send Parcel
+                            Confirm & Send Parcel (৳{baseCost})
                         </button>
                     </div>
 
