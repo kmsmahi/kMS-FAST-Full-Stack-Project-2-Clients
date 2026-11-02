@@ -3,6 +3,8 @@ import { useForm, useWatch } from 'react-hook-form';
 import { useLoaderData } from 'react-router';
 import { FiBox, FiUser, FiMapPin, FiFileText, FiDollarSign } from 'react-icons/fi';
 import Swal from 'sweetalert2';
+import UseAuth from '../Hooks/UseAuth';
+import UseAxios from '../Hooks/UseAxios'; // Make sure the path matches your hook location
 
 const SendParcel = () => {
     const { register, handleSubmit, control, reset, formState: { errors } } = useForm({
@@ -12,7 +14,9 @@ const SendParcel = () => {
     });
 
     const serviceCenters = useLoaderData() || [];
-    
+    const { user } = UseAuth();
+    const axiosSecure = UseAxios();
+
     // Extract unique regions safely
     const regions = [...new Set(serviceCenters.map((r) => r.region))];
 
@@ -63,7 +67,7 @@ const SendParcel = () => {
 
     const { baseCost, calculationDetails, isWithinCity } = calculateCost();
 
-    // --- FORM SUBMISSION WITH SWEETALERT MODAL ---
+    // --- FORM SUBMISSION & DATABASE SAVING ---
     const onSubmit = (data) => {
         const costInfo = calculateCost();
 
@@ -83,42 +87,63 @@ const SendParcel = () => {
             showCancelButton: true,
             confirmButtonColor: '#CAEB66',
             cancelButtonColor: '#f3f4f6',
-            confirmButtonText: '<span class="text-gray-900 font-bold">Proceed to Payment / Send</span>',
+            confirmButtonText: '<span class="text-gray-900 font-bold">Confirm & Save</span>',
             cancelButtonText: '<span class="text-gray-600 font-semibold">Cancel</span>',
             customClass: {
                 popup: 'rounded-3xl',
                 confirmButton: 'rounded-2xl px-5 py-3 hover:bg-[#b8d655]',
                 cancelButton: 'rounded-2xl px-5 py-3 text-gray-700'
             }
-        }).then((result) => {
+        }).then(async (result) => {
             if (result.isConfirmed) {
-                console.log('Final Submission Data:', { ...data, cost: costInfo.baseCost });
-                
-                // Success Alert & Reset Form
-                Swal.fire({
-                    title: 'Success!',
-                    text: 'Your parcel has been booked successfully!',
-                    icon: 'success',
-                    confirmButtonColor: '#CAEB66',
-                    customClass: { popup: 'rounded-3xl', confirmButton: 'rounded-2xl px-5 py-3 text-gray-900 font-bold' }
-                });
+                // Construct the payload to save in MongoDB
+                const parcelData = {
+                    ...data,
+                    cost: costInfo.baseCost,
+                    email: user?.email || 'anonymous',
+                    status: 'pending',
+                    createdAt: new Date()
+                };
 
-                // Reset the form fields and price back to default
-                reset({
-                    parcelType: 'Document',
-                    parcelName: '',
-                    parcelWeight: '',
-                    senderName: '',
-                    senderAddress: '',
-                    senderPhone: '',
-                    senderRegion: '',
-                    senderDistrict: '',
-                    receiverName: '',
-                    receiverAddress: '',
-                    receiverPhone: '',
-                    receiverRegion: '',
-                    receiverDistrict: ''
-                });
+                try {
+                    // Send data to backend server
+                    const response = await axiosSecure.post('/parcels', parcelData);
+                    
+                    if (response.data.insertedId || response.data.success || response.status === 200) {
+                        Swal.fire({
+                            title: 'Success!',
+                            text: 'Your parcel has been booked and saved successfully!',
+                            icon: 'success',
+                            confirmButtonColor: '#CAEB66',
+                            customClass: { popup: 'rounded-3xl', confirmButton: 'rounded-2xl px-5 py-3 text-gray-900 font-bold' }
+                        });
+
+                        // Reset form fields
+                        reset({
+                            parcelType: 'Document',
+                            parcelName: '',
+                            parcelWeight: '',
+                            senderName: '',
+                            senderAddress: '',
+                            senderPhone: '',
+                            senderRegion: '',
+                            senderDistrict: '',
+                            receiverName: '',
+                            receiverAddress: '',
+                            receiverPhone: '',
+                            receiverRegion: '',
+                            receiverDistrict: ''
+                        });
+                    }
+                } catch (error) {
+                    console.error('Error saving parcel:', error);
+                    Swal.fire({
+                        title: 'Error!',
+                        text: 'Failed to save parcel to database. Please try again.',
+                        icon: 'error',
+                        confirmButtonColor: '#CAEB66'
+                    });
+                }
             }
         });
     };
