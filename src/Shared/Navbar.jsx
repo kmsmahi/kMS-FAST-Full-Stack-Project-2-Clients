@@ -15,8 +15,6 @@ const publicNavItems = [
 
 const privateNavItems = [
   { name: 'Dashboard', path: '/dashboard' },
-  { name: 'Send Parcel', path: '/dashboard/send-parcel' },
-  { name: 'My Parcels', path: '/dashboard/my-parcels' },
 ];
 
 export default function Navbar() {
@@ -30,7 +28,7 @@ export default function Navbar() {
   const [updateError, setUpdateError] = useState('');
   const { register, handleSubmit, reset } = useForm();
 
-  // Combine public and private links dynamically
+  // Show public links + single Dashboard link when logged in
   const navItems = user ? [...publicNavItems, ...privateNavItems] : publicNavItems;
 
   // Handle scroll shadow & background elevation
