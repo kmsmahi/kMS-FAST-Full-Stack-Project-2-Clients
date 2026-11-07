@@ -11,6 +11,7 @@ import Login from "../AuthPage/Login";
 import Register from "../AuthPage/Register";
 import PrivateRoute from "../AuthPage/PrivateRoute";
 import SendParcel from "../Navigation/SendParcel";
+import MyParcels from "../Navigation/MyParcels";
 
 
 
@@ -53,6 +54,13 @@ export const router = createBrowserRouter([
         loader:()=>fetch('/warehouses.json')
         .then(res=>res.json()),
       },
+      {
+      path: '/my-parcels',
+      element: <PrivateRoute>
+        <MyParcels></MyParcels>
+        </PrivateRoute>
+      }
+
     ]
   },
 

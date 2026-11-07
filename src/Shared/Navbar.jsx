@@ -12,6 +12,7 @@ const allNavItems = [
   { name: 'Pricing', path: '/pricing' },
   { name: 'Be a Rider', path: '/bearider' },
   { name: 'Send Parcel', path: '/send-Parcel' },
+  { name: 'My Parcels', path: '/my-parcels' },
 ];
 
 export default function Navbar() {
