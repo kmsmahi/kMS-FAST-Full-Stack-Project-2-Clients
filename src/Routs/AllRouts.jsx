@@ -7,13 +7,11 @@ import Pricing from "../Navigation/Pricing";
 import BeARider from "../Navigation/BeARider";
 import AuthLayout from "../Layouts/AuthLayout";
 import Login from "../AuthPage/Login";
-// import Logout from "../AuthPage/Logout";
 import Register from "../AuthPage/Register";
 import PrivateRoute from "../AuthPage/PrivateRoute";
 import SendParcel from "../Navigation/SendParcel";
 import MyParcels from "../Navigation/MyParcels";
-
-
+import DashboardLayout from "../Layouts/DashBoardLayout";
 
 export const router = createBrowserRouter([
   {
@@ -21,65 +19,59 @@ export const router = createBrowserRouter([
     element: <RootLayout></RootLayout>,
     children:[
       {
-        index:true,
-        element:<Home></Home>
+        index: true,
+        element: <Home></Home>
       },
       {
-        path:'/coverage',
-        element:<Coverage></Coverage>,
-        loader:()=>fetch('/warehouses.json')
-        .then(res=>res.json()),
+        path: 'coverage',
+        element: <Coverage></Coverage>,
+        loader: () => fetch('/warehouses.json').then(res => res.json()),
       },
       {
-        path:'/aboutus',
-        element:<AboutUs></AboutUs>
+        path: 'aboutus',
+        element: <AboutUs></AboutUs>
       },
       {
-        path:'/pricing',
-        element:<PrivateRoute>
-          <Pricing></Pricing>
-        </PrivateRoute>
+        path: 'pricing',
+        element: <PrivateRoute><Pricing /></PrivateRoute>
       },
       {
-        path:'/bearider',
-        element:<PrivateRoute>
-          <BeARider></BeARider>
-        </PrivateRoute>
-      },
-      {
-        path:'/send-parcel',
-        element:<PrivateRoute>
-          <SendParcel></SendParcel>
-        </PrivateRoute>,
-        loader:()=>fetch('/warehouses.json')
-        .then(res=>res.json()),
-      },
-      {
-      path: '/my-parcels',
-      element: <PrivateRoute>
-        <MyParcels></MyParcels>
-        </PrivateRoute>
+        path: 'bearider',
+        element: <PrivateRoute><BeARider /></PrivateRoute>
       }
-
     ]
   },
-
   {
-    path:'/',
-    element:<AuthLayout></AuthLayout>,
+    path: '/',
+    element: <AuthLayout></AuthLayout>,
     children:[
       {
-        path:'/login',
-        element:<Login></Login>
+        path: 'login',
+        element: <Login></Login>
       },
-      // {
-      //   path:'/logout',
-      //   element:<Logout></Logout>
-      // },
       {
-        path:'/register',
-        element:<Register></Register>
+        path: 'register',
+        element: <Register></Register>
       },
+    ]
+  },
+  {
+    path: '/dashboard',
+    element: <PrivateRoute><DashboardLayout /></PrivateRoute>,
+    children: [
+      { 
+        path: '', 
+        element: <div className="text-xl font-bold">Welcome to your Dashboard Overview!</div> 
+      },
+      { 
+        path: 'my-parcels', 
+        element: <MyParcels /> 
+      },
+      { 
+        path: 'send-parcel', 
+        element: <SendParcel />,
+        loader: () => fetch('/warehouses.json').then(res => res.json()),
+      }
     ]
   }
 ]);

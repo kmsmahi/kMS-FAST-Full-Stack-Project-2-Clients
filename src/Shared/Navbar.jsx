@@ -5,14 +5,18 @@ import Logo from '../HomePage/Logo';
 import UseAuth from '../Hooks/UseAuth';
 import { useForm } from 'react-hook-form';
 
-const allNavItems = [
+const publicNavItems = [
   { name: 'Home', path: '/' },
   { name: 'Coverage', path: '/coverage' },
   { name: 'About Us', path: '/aboutus' },
   { name: 'Pricing', path: '/pricing' },
   { name: 'Be a Rider', path: '/bearider' },
-  { name: 'Send Parcel', path: '/send-Parcel' },
-  { name: 'My Parcels', path: '/my-parcels' },
+];
+
+const privateNavItems = [
+  { name: 'Dashboard', path: '/dashboard' },
+  { name: 'Send Parcel', path: '/dashboard/send-parcel' },
+  { name: 'My Parcels', path: '/dashboard/my-parcels' },
 ];
 
 export default function Navbar() {
@@ -26,9 +30,8 @@ export default function Navbar() {
   const [updateError, setUpdateError] = useState('');
   const { register, handleSubmit, reset } = useForm();
 
-  // Filter nav items based on user authentication status
-  // If user is not logged in, show only the first 3 items. If logged in, show all.
-  const navItems = user ? allNavItems : allNavItems.slice(0, 3);
+  // Combine public and private links dynamically
+  const navItems = user ? [...publicNavItems, ...privateNavItems] : publicNavItems;
 
   // Handle scroll shadow & background elevation
   useEffect(() => {
@@ -100,7 +103,6 @@ export default function Navbar() {
     }
   };
 
-  // Extract first letter of display name or email for avatar fallback
   const userInitial = user?.displayName
     ? user.displayName.charAt(0).toUpperCase()
     : user?.email
@@ -124,7 +126,7 @@ export default function Navbar() {
             
             {/* Brand Logo & Name */}
             <NavLink
-              to="/aboutus"
+              to="/"
               className="flex items-center gap-3 group focus:outline-none focus:ring-2 focus:ring-[#CAEB66] rounded-lg p-1"
               aria-label="KMS-FAST Home"
             >
@@ -136,7 +138,7 @@ export default function Navbar() {
               </span>
             </NavLink>
 
-            {/* Desktop Navigation Links (Dynamically filtered) */}
+            {/* Desktop Navigation Links */}
             <nav className="hidden md:flex items-center gap-1 bg-gray-50 border border-gray-200/70 px-3 py-1.5 rounded-full shadow-inner">
               {navItems.map((item) => (
                 <NavLink
@@ -159,7 +161,6 @@ export default function Navbar() {
             <div className="hidden md:flex items-center gap-3">
               {user ? (
                 <div className="flex items-center gap-3">
-                  {/* Clickable User Info Badge for Profile Update */}
                   <button
                     onClick={() => setIsProfileModalOpen(true)}
                     title="Click to update profile"
@@ -181,7 +182,6 @@ export default function Navbar() {
                     </span>
                   </button>
 
-                  {/* Logout Button */}
                   <button
                     onClick={handleLogout}
                     className="px-4 py-2 text-xs font-semibold text-red-600 bg-red-50 hover:bg-red-100 rounded-full transition-all duration-200 border border-red-100 cursor-pointer"
@@ -193,24 +193,15 @@ export default function Navbar() {
                 <>
                   <NavLink
                     to="/login"
-                    className="group relative inline-flex items-center gap-2 px-5 py-2.5 text-sm font-semibold text-gray-900 bg-[#CAEB66] hover:bg-[#b8d655] transition-all duration-200 rounded-full shadow-md hover:shadow-[#CAEB66]/30 focus:outline-none focus:ring-2 focus:ring-[#CAEB66] focus:ring-offset-2 focus:ring-offset-white"
+                    className="group relative inline-flex items-center gap-2 px-5 py-2.5 text-sm font-semibold text-gray-900 bg-[#CAEB66] hover:bg-[#b8d655] transition-all duration-200 rounded-full shadow-md"
                   >
                     Sign In
                   </NavLink>
                   <NavLink
                     to="/register"
-                    className="group relative inline-flex items-center gap-2 px-5 py-2.5 text-sm font-semibold text-gray-900 bg-[#CAEB66] hover:bg-[#b8d655] transition-all duration-200 rounded-full shadow-md hover:shadow-[#CAEB66]/30 focus:outline-none focus:ring-2 focus:ring-[#CAEB66] focus:ring-offset-2 focus:ring-offset-white"
+                    className="group relative inline-flex items-center gap-2 px-5 py-2.5 text-sm font-semibold text-gray-900 bg-[#CAEB66] hover:bg-[#b8d655] transition-all duration-200 rounded-full shadow-md"
                   >
                     <span>Sign Up</span>
-                    <svg
-                      className="w-4 h-4 transition-transform duration-200 group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                      strokeWidth={2.5}
-                    >
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M7 17L17 7M17 7H7M17 7v10" />
-                    </svg>
                   </NavLink>
                 </>
               )}
@@ -221,10 +212,7 @@ export default function Navbar() {
               <button
                 onClick={() => setIsOpen(!isOpen)}
                 type="button"
-                aria-expanded={isOpen}
-                aria-controls="mobile-menu"
-                aria-label="Toggle navigation menu"
-                className="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#CAEB66]"
+                className="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg focus:outline-none"
               >
                 <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                   {isOpen ? (
@@ -239,15 +227,13 @@ export default function Navbar() {
           </div>
         </div>
 
-        {/* Mobile Drawer / Dropdown */}
+        {/* Mobile Drawer */}
         <AnimatePresence>
           {isOpen && (
             <motion.div
-              id="mobile-menu"
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: 'auto' }}
               exit={{ opacity: 0, height: 0 }}
-              transition={{ duration: 0.25, ease: 'easeInOut' }}
               className="md:hidden overflow-hidden bg-white border-b border-gray-200 px-4 pt-4 pb-6 shadow-xl"
             >
               <div className="flex flex-col gap-2">
@@ -260,7 +246,7 @@ export default function Navbar() {
                       `px-4 py-2 rounded-xl text-base font-medium transition-colors ${
                         isActive
                           ? 'text-gray-900 bg-[#CAEB66]/30 font-semibold border-l-4 border-[#CAEB66]'
-                          : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900'
+                          : 'text-gray-700 hover:bg-gray-100'
                       }`
                     }
                   >
@@ -271,7 +257,6 @@ export default function Navbar() {
                 <div className="border-t border-gray-100 my-3 pt-3 flex flex-col gap-2.5">
                   {user ? (
                     <>
-                      {/* Clickable Mobile User Profile Row */}
                       <button
                         onClick={() => {
                           setIsOpen(false);
@@ -282,7 +267,7 @@ export default function Navbar() {
                         {user.photoURL ? (
                           <img
                             src={user.photoURL}
-                            alt={user.displayName || 'User Avatar'}
+                            alt="Avatar"
                             className="w-9 h-9 rounded-full object-cover ring-2 ring-[#CAEB66]"
                           />
                         ) : (
@@ -294,9 +279,7 @@ export default function Navbar() {
                           <span className="text-sm font-bold text-gray-900">
                             {user.displayName || 'User'}
                           </span>
-                          <span className="text-xs text-gray-500 truncate max-w-[200px]">
-                            Tap to update profile
-                          </span>
+                          <span className="text-xs text-gray-500">Tap to update profile</span>
                         </div>
                       </button>
 
@@ -312,19 +295,16 @@ export default function Navbar() {
                       <NavLink
                         to="/login"
                         onClick={() => setIsOpen(false)}
-                        className="w-full text-center px-4 py-3 text-sm font-medium text-gray-700 bg-gray-50 hover:bg-gray-100 rounded-xl transition-colors"
+                        className="w-full text-center px-4 py-3 text-sm font-medium text-gray-700 bg-gray-50 hover:bg-gray-100 rounded-xl"
                       >
                         Sign In
                       </NavLink>
                       <NavLink
                         to="/register"
                         onClick={() => setIsOpen(false)}
-                        className="w-full flex items-center justify-center gap-2 px-4 py-3 text-sm font-semibold text-gray-900 bg-[#CAEB66] hover:bg-[#b8d655] rounded-xl transition-colors shadow-sm"
+                        className="w-full flex items-center justify-center gap-2 px-4 py-3 text-sm font-semibold text-gray-900 bg-[#CAEB66] hover:bg-[#b8d655] rounded-xl shadow-sm"
                       >
-                        <span>Sign Up</span>
-                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M7 17L17 7M17 7H7M17 7v10" />
-                        </svg>
+                        Sign Up
                       </NavLink>
                     </>
                   )}
@@ -335,7 +315,7 @@ export default function Navbar() {
         </AnimatePresence>
       </motion.header>
 
-      {/* --- PROFILE UPDATE MODAL --- */}
+      {/* Profile Modal */}
       <AnimatePresence>
         {isProfileModalOpen && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
@@ -345,14 +325,11 @@ export default function Navbar() {
               exit={{ opacity: 0, scale: 0.95 }}
               className="bg-white rounded-3xl p-6 sm:p-8 max-w-md w-full shadow-2xl border border-gray-100 relative"
             >
-              {/* Close Button */}
               <button
                 onClick={() => setIsProfileModalOpen(false)}
                 className="absolute top-5 right-5 text-gray-400 hover:text-gray-700 p-1 rounded-full hover:bg-gray-100 transition-colors cursor-pointer"
               >
-                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-                </svg>
+                ✕
               </button>
 
               <h2 className="text-2xl font-bold text-gray-900 mb-1">Update Profile</h2>
@@ -365,7 +342,6 @@ export default function Navbar() {
               )}
 
               <form onSubmit={handleSubmit(handleProfileUpdate)} className="space-y-4">
-                {/* Name Input */}
                 <div>
                   <label className="block text-xs font-semibold text-gray-700 mb-1.5">Full Name</label>
                   <input
@@ -373,27 +349,24 @@ export default function Navbar() {
                     defaultValue={user?.displayName || ''}
                     {...register('name')}
                     className="w-full px-4 py-3 text-sm bg-gray-50 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#bfe451]"
-                    placeholder="Enter your name"
                   />
                 </div>
 
-                {/* Photo File Input */}
                 <div>
                   <label className="block text-xs font-semibold text-gray-700 mb-1.5">New Profile Picture</label>
                   <input
                     type="file"
                     accept="image/*"
                     {...register('photo')}
-                    className="w-full text-xs text-gray-500 file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-[#CAEB66] file:text-gray-900 hover:file:bg-[#b8d655] cursor-pointer bg-gray-50 border border-gray-200 rounded-2xl"
+                    className="w-full text-xs text-gray-500 file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-[#CAEB66] file:text-gray-900 cursor-pointer bg-gray-50 border border-gray-200 rounded-2xl"
                   />
                 </div>
 
-                {/* Action Buttons */}
                 <div className="flex items-center justify-end gap-3 pt-4">
                   <button
                     type="button"
                     onClick={() => setIsProfileModalOpen(false)}
-                    className="px-5 py-2.5 text-xs font-semibold text-gray-600 hover:bg-gray-100 rounded-2xl transition-colors cursor-pointer"
+                    className="px-5 py-2.5 text-xs font-semibold text-gray-600 hover:bg-gray-100 rounded-2xl cursor-pointer"
                   >
                     Cancel
                   </button>
