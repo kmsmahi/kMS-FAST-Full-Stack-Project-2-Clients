@@ -100,7 +100,7 @@ const SendParcel = () => {
                 const parcelData = {
                     ...data,
                     cost: costInfo.baseCost,
-                    email: user?.email || 'anonymous',
+                    senderEmail: user?.email || 'anonymous',
                     status: 'pending',
                     createdAt: new Date()
                 };
