@@ -6,7 +6,7 @@ import CheckoutForm from './CheckoutForm';
 import UseAxios from '../Hooks/UseAxios';
 import { FiShield, FiSmartphone, FiCreditCard } from 'react-icons/fi';
 import Swal from 'sweetalert2';
-
+import UseAuth from "../Hooks/UseAuth";
 // Replace with your actual publishable key from Stripe Dashboard
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY || 'pk_test_sample');
 
@@ -15,7 +15,7 @@ const Payment = () => {
   const parcelId = searchParams.get('parcelId');
   const axiosSecure = UseAxios();
   const navigate = useNavigate();
-
+  const { user } = UseAuth();
   const [parcel, setParcel] = useState(null);
   const [loading, setLoading] = useState(true);
   const [method, setMethod] = useState('card'); // 'card', 'bkash', 'nagad'
