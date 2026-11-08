@@ -1,20 +1,25 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router';
+import Swal from 'sweetalert2';
 import UseAuth from '../Hooks/UseAuth';
+import UseAxios from '../Hooks/UseAxios';
+import { FiTrash2, FiCreditCard } from 'react-icons/fi';
 
 const MyParcels = () => {
   const { user } = UseAuth();
+  const axiosSecure = UseAxios();
+  const navigate = useNavigate();
   const [parcels, setParcels] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  // Fetch user parcels
   useEffect(() => {
     if (user?.email) {
-      fetch(`http://localhost:5000/parcels?email=${user.email}`)
-        .then((res) => res.json())
-        .then((data) => {
-          if (Array.isArray(data)) {
-            setParcels(data);
+      axiosSecure.get(`/parcels?email=${user.email}`)
+        .then((res) => {
+          if (Array.isArray(res.data)) {
+            setParcels(res.data);
           } else {
-            console.error('API response is not an array:', data);
             setParcels([]);
           }
           setLoading(false);
@@ -27,7 +32,56 @@ const MyParcels = () => {
     } else {
       setLoading(false);
     }
-  }, [user]);
+  }, [user, axiosSecure]);
+
+  // Handle Parcel Deletion
+  const handleDelete = (id) => {
+    Swal.fire({
+      title: 'Are you sure?',
+      text: "You won't be able to revert this shipment booking!",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#f3f4f6',
+      confirmButtonText: '<span class="text-white font-bold">Yes, delete it!</span>',
+      cancelButtonText: '<span class="text-gray-700 font-semibold">Cancel</span>',
+      customClass: {
+        popup: 'rounded-3xl',
+        confirmButton: 'rounded-2xl px-5 py-3',
+        cancelButton: 'rounded-2xl px-5 py-3'
+      }
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          const res = await axiosSecure.delete(`/parcels/${id}`);
+          if (res.data.deletedCount > 0) {
+            // Filter out deleted parcel from local state
+            setParcels(parcels.filter(parcel => parcel._id !== id));
+            Swal.fire({
+              title: 'Deleted!',
+              text: 'Your parcel has been removed successfully.',
+              icon: 'success',
+              confirmButtonColor: '#CAEB66',
+              customClass: { popup: 'rounded-3xl', confirmButton: 'rounded-2xl px-5 py-3 text-gray-900 font-bold' }
+            });
+          }
+        } catch (error) {
+          console.error('Delete error:', error);
+          Swal.fire({
+            title: 'Error!',
+            text: 'Failed to delete the parcel. Please try again.',
+            icon: 'error',
+            confirmButtonColor: '#CAEB66'
+          });
+        }
+      }
+    });
+  };
+
+  // Handle Pay Action Navigation
+  const handlePay = (parcelId) => {
+    navigate(`/dashboard/payment?parcelId=${parcelId}`);
+  };
 
   if (loading) {
     return (
@@ -37,7 +91,6 @@ const MyParcels = () => {
     );
   }
 
- 
   const parcelList = Array.isArray(parcels) ? parcels : [];
 
   return (
@@ -63,12 +116,13 @@ const MyParcels = () => {
               <thead>
                 <tr className="bg-gray-50 text-gray-600 border-b border-gray-100">
                   <th>#</th>
-                  <th>Parcel Type / Name</th>
-                  <th>Receiver Name</th>
+                  <th>Parcel Name</th>
                   <th>Destination</th>
                   <th>Cost</th>
+                  <th>Payment</th>
                   <th>Status</th>
                   <th>Booking Date</th>
+                  <th className="text-center">Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -76,9 +130,21 @@ const MyParcels = () => {
                   <tr key={parcel._id || index} className="hover:bg-gray-50/50 transition-colors">
                     <th>{index + 1}</th>
                     <td className="font-semibold text-gray-900">{parcel.parcelName || parcel.type || 'General Parcel'}</td>
-                    <td>{parcel.receiverName || 'N/A'}</td>
                     <td>{parcel.deliveryAddress || parcel.receiverAddress || 'N/A'}</td>
                     <td className="font-semibold text-gray-900">৳{parcel.cost || '0'}</td>
+                    
+                    {/* Payment Status Column */}
+                    <td>
+                      <span className={`px-2.5 py-1 rounded-full text-[11px] font-bold ${
+                        parcel.paymentStatus === 'paid' 
+                          ? 'bg-emerald-100 text-emerald-700' 
+                          : 'bg-rose-100 text-rose-700'
+                      }`}>
+                        {parcel.paymentStatus === 'paid' ? 'Paid' : 'Unpaid'}
+                      </span>
+                    </td>
+
+                    {/* Shipment Status Column */}
                     <td>
                       <span className={`px-2.5 py-1 rounded-full text-[11px] font-bold ${
                         parcel.status === 'Delivered' 
@@ -88,8 +154,36 @@ const MyParcels = () => {
                         {parcel.status || 'Pending'}
                       </span>
                     </td>
+
                     <td className="text-gray-500 text-xs">
                       {parcel.createdAt ? new Date(parcel.createdAt).toLocaleDateString() : 'Recent'}
+                    </td>
+
+                    {/* Actions Column: Pay & Delete */}
+                    <td className="text-center">
+                      <div className="flex items-center justify-center gap-2">
+                        {parcel.paymentStatus !== 'paid' ? (
+                          <button
+                            onClick={() => handlePay(parcel._id)}
+                            className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#CAEB66] hover:bg-[#b8d655] text-gray-900 text-xs font-bold rounded-xl shadow-xs transition-all cursor-pointer"
+                            title="Pay for this parcel"
+                          >
+                            <FiCreditCard className="w-3.5 h-3.5" /> Pay
+                          </button>
+                        ) : (
+                          <span className="text-xs font-semibold text-emerald-600 px-3 py-1 bg-emerald-50 rounded-xl">
+                            Completed
+                          </span>
+                        )}
+
+                        <button
+                          onClick={() => handleDelete(parcel._id)}
+                          className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-xl transition-colors cursor-pointer"
+                          title="Delete Parcel"
+                        >
+                          <FiTrash2 className="w-4 h-4" />
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))}

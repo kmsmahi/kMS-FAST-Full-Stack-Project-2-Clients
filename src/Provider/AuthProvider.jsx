@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { 
   onAuthStateChanged, 
-  signInWithPopup, 
+  signInWithRedirect,
   GoogleAuthProvider, 
   signOut, 
   updateProfile,
@@ -32,7 +32,7 @@ const AuthProvider = ({ children }) => {
   // 3. Google Login
   const googleSignIn = () => {
     setLoading(true);
-    return signInWithPopup(auth, googleProvider);
+    return signInWithRedirect(auth, googleProvider);
   };
 
   // 4. Logout

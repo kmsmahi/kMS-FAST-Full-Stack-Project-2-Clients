@@ -12,6 +12,7 @@ import PrivateRoute from "../AuthPage/PrivateRoute";
 import SendParcel from "../Navigation/SendParcel";
 import MyParcels from "../Navigation/MyParcels";
 import DashboardLayout from "../Layouts/DashBoardLayout";
+import Payment from "../Navigation/Payment";
 
 export const router = createBrowserRouter([
   {
@@ -71,6 +72,10 @@ export const router = createBrowserRouter([
         path: 'send-parcel', 
         element: <SendParcel />,
         loader: () => fetch('/warehouses.json').then(res => res.json()),
+      },
+      {
+        path:'payment',
+        element:<Payment></Payment>
       }
     ]
   }
