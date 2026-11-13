@@ -54,7 +54,8 @@ const MyParcels = () => {
       if (result.isConfirmed) {
         try {
           const res = await axiosSecure.delete(`/parcels/${id}`);
-          if (res.data.deletedCount > 0) {
+          
+          if (res.data.success) {
             // Filter out deleted parcel from local state
             setParcels(parcels.filter(parcel => parcel._id !== id));
             Swal.fire({
@@ -64,12 +65,14 @@ const MyParcels = () => {
               confirmButtonColor: '#CAEB66',
               customClass: { popup: 'rounded-3xl', confirmButton: 'rounded-2xl px-5 py-3 text-gray-900 font-bold' }
             });
+          } else {
+            throw new Error(res.data.message || 'Failed to delete parcel');
           }
         } catch (error) {
           console.error('Delete error:', error);
           Swal.fire({
             title: 'Error!',
-            text: 'Failed to delete the parcel. Please try again.',
+            text: error.response?.data?.message || 'Failed to delete the parcel. Please try again.',
             icon: 'error',
             confirmButtonColor: '#CAEB66'
           });

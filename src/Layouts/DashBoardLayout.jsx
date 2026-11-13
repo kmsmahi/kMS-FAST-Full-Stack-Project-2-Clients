@@ -2,11 +2,13 @@ import { Outlet, NavLink, useNavigate } from 'react-router';
 import { useState } from 'react';
 import Logo from '../HomePage/Logo';
 import UseAuth from '../Hooks/UseAuth';
+import UseRole from '../Hooks/UseRole'; // 👈 Import your role hook
 import { motion, AnimatePresence } from 'framer-motion';
 
 export default function DashboardLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const { user, logOut } = UseAuth();
+  const [role, roleLoading] = UseRole(); // 👈 Fetch role and loading status
   const navigate = useNavigate();
 
   const handleLogout = async () => {
@@ -57,7 +59,7 @@ export default function DashboardLayout() {
                 KMS<span className="text-[#96b830]">-FAST</span>
               </span>
               <span className="text-[10px] uppercase tracking-wider font-semibold text-gray-400 mt-4">
-                Logistics Portal
+                Logistics Portal {role && `(${role})`}
               </span>
             </div>
           </NavLink>
@@ -65,55 +67,146 @@ export default function DashboardLayout() {
 
         {/* Navigation Links */}
         <nav className="flex-1 px-4 py-6 space-y-1.5 overflow-y-auto">
-          <div className="px-3 pb-2 text-[11px] font-bold uppercase tracking-wider text-gray-400">
-            Main Menu
-          </div>
+          
+          {/* ================= USER / CUSTOMER LINKS ================= */}
+          {!roleLoading && role === 'user' && (
+            <>
+              <div className="px-3 pb-2 text-[11px] font-bold uppercase tracking-wider text-gray-400">
+                Customer Menu
+              </div>
 
-          <NavLink 
-            to="/dashboard" 
-            end 
-            onClick={() => setSidebarOpen(false)}
-            className={({ isActive }) => `flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-semibold transition-all duration-200 ${isActive ? 'bg-[#CAEB66] text-gray-900 shadow-xs' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'}`}
-          >
-            <svg className="w-5 h-5 opacity-80" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
-            </svg>
-            Overview
-          </NavLink>
+              <NavLink 
+                to="/dashboard" 
+                end 
+                onClick={() => setSidebarOpen(false)}
+                className={({ isActive }) => `flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-semibold transition-all duration-200 ${isActive ? 'bg-[#CAEB66] text-gray-900 shadow-xs' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'}`}
+              >
+                <svg className="w-5 h-5 opacity-80" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+                </svg>
+                Overview
+              </NavLink>
 
-          <NavLink 
-            to="/dashboard/send-parcel" 
-            onClick={() => setSidebarOpen(false)}
-            className={({ isActive }) => `flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-semibold transition-all duration-200 ${isActive ? 'bg-[#CAEB66] text-gray-900 shadow-xs' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'}`}
-          >
-            <svg className="w-5 h-5 opacity-80" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
-            </svg>
-            Send Parcel
-          </NavLink>
+              <NavLink 
+                to="/dashboard/send-parcel" 
+                onClick={() => setSidebarOpen(false)}
+                className={({ isActive }) => `flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-semibold transition-all duration-200 ${isActive ? 'bg-[#CAEB66] text-gray-900 shadow-xs' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'}`}
+              >
+                <svg className="w-5 h-5 opacity-80" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+                </svg>
+                Send Parcel
+              </NavLink>
 
-          <NavLink 
-            to="/dashboard/my-parcels" 
-            onClick={() => setSidebarOpen(false)}
-            className={({ isActive }) => `flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-semibold transition-all duration-200 ${isActive ? 'bg-[#CAEB66] text-gray-900 shadow-xs' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'}`}
-          >
-            <svg className="w-5 h-5 opacity-80" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
-            </svg>
-            My Parcels
-          </NavLink>
+              <NavLink 
+                to="/dashboard/my-parcels" 
+                onClick={() => setSidebarOpen(false)}
+                className={({ isActive }) => `flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-semibold transition-all duration-200 ${isActive ? 'bg-[#CAEB66] text-gray-900 shadow-xs' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'}`}
+              >
+                <svg className="w-5 h-5 opacity-80" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                </svg>
+                My Parcels
+              </NavLink>
 
-          {/* Added Payment History Link */}
-          <NavLink 
-            to="/dashboard/payment-history" 
-            onClick={() => setSidebarOpen(false)}
-            className={({ isActive }) => `flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-semibold transition-all duration-200 ${isActive ? 'bg-[#CAEB66] text-gray-900 shadow-xs' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'}`}
-          >
-            <svg className="w-5 h-5 opacity-80" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
-            </svg>
-            Payment History
-          </NavLink>
+              <NavLink 
+                to="/dashboard/payment-history" 
+                onClick={() => setSidebarOpen(false)}
+                className={({ isActive }) => `flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-semibold transition-all duration-200 ${isActive ? 'bg-[#CAEB66] text-gray-900 shadow-xs' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'}`}
+              >
+                <svg className="w-5 h-5 opacity-80" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+                </svg>
+                Payment History
+              </NavLink>
+            </>
+          )}
+
+          {/* ================= ADMIN LINKS ================= */}
+          {!roleLoading && role === 'admin' && (
+            <>
+              <div className="px-3 pb-2 text-[11px] font-bold uppercase tracking-wider text-gray-400">
+                Admin Management
+              </div>
+
+              <NavLink 
+                to="/dashboard" 
+                end 
+                onClick={() => setSidebarOpen(false)}
+                className={({ isActive }) => `flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-semibold transition-all duration-200 ${isActive ? 'bg-[#CAEB66] text-gray-900 shadow-xs' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'}`}
+              >
+                <svg className="w-5 h-5 opacity-80" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+                </svg>
+                Admin Statistics
+              </NavLink>
+
+              <NavLink 
+                to="/dashboard/all-users" 
+                onClick={() => setSidebarOpen(false)}
+                className={({ isActive }) => `flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-semibold transition-all duration-200 ${isActive ? 'bg-[#CAEB66] text-gray-900 shadow-xs' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'}`}
+              >
+                <svg className="w-5 h-5 opacity-80" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                </svg>
+                All Users
+              </NavLink>
+
+              <NavLink 
+                to="/dashboard/all-parcels" 
+                onClick={() => setSidebarOpen(false)}
+                className={({ isActive }) => `flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-semibold transition-all duration-200 ${isActive ? 'bg-[#CAEB66] text-gray-900 shadow-xs' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'}`}
+              >
+                <svg className="w-5 h-5 opacity-80" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                </svg>
+                All Parcels
+              </NavLink>
+
+              <NavLink 
+                to="/dashboard/all-riders" 
+                onClick={() => setSidebarOpen(false)}
+                className={({ isActive }) => `flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-semibold transition-all duration-200 ${isActive ? 'bg-[#CAEB66] text-gray-900 shadow-xs' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'}`}
+              >
+                <svg className="w-5 h-5 opacity-80" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                </svg>
+                All Riders
+              </NavLink>
+            </>
+          )}
+
+          {/* ================= RIDER LINKS ================= */}
+          {!roleLoading && role === 'rider' && (
+            <>
+              <div className="px-3 pb-2 text-[11px] font-bold uppercase tracking-wider text-gray-400">
+                Rider Portal
+              </div>
+
+              <NavLink 
+                to="/dashboard" 
+                end 
+                onClick={() => setSidebarOpen(false)}
+                className={({ isActive }) => `flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-semibold transition-all duration-200 ${isActive ? 'bg-[#CAEB66] text-gray-900 shadow-xs' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'}`}
+              >
+                <svg className="w-5 h-5 opacity-80" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+                </svg>
+                Rider Overview
+              </NavLink>
+
+              <NavLink 
+                to="/dashboard/assigned-deliveries" 
+                onClick={() => setSidebarOpen(false)}
+                className={({ isActive }) => `flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-semibold transition-all duration-200 ${isActive ? 'bg-[#CAEB66] text-gray-900 shadow-xs' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'}`}
+              >
+                <svg className="w-5 h-5 opacity-80" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+                </svg>
+                Assigned Deliveries
+              </NavLink>
+            </>
+          )}
 
           <div className="pt-6 px-3 pb-2 text-[11px] font-bold uppercase tracking-wider text-gray-400">
             System
@@ -146,8 +239,8 @@ export default function DashboardLayout() {
                 <span className="text-xs font-bold text-gray-900 truncate">
                   {user?.displayName || 'Valued User'}
                 </span>
-                <span className="text-[11px] text-gray-500 truncate">
-                  {user?.email || 'Logged In'}
+                <span className="text-[11px] text-gray-500 truncate capitalize">
+                  {role || 'user'}
                 </span>
               </div>
             </div>
@@ -180,15 +273,17 @@ export default function DashboardLayout() {
               </svg>
             </button>
             <div>
-              <h1 className="text-lg font-bold text-gray-900 leading-tight">Customer Dashboard</h1>
-              <p className="text-xs text-gray-500 hidden sm:block">Manage your shipment deliveries and active parcel requests</p>
+              <h1 className="text-lg font-bold text-gray-900 capitalize leading-tight">
+                {role === 'admin' ? 'Admin Dashboard' : role === 'rider' ? 'Rider Portal' : 'Customer Dashboard'}
+              </h1>
+              <p className="text-xs text-gray-500 hidden sm:block">Manage your logistics, operations, and system workflows</p>
             </div>
           </div>
 
           <div className="flex items-center gap-3">
             <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 bg-[#CAEB66]/20 border border-[#CAEB66]/40 rounded-full">
               <span className="w-2 h-2 rounded-full bg-[#96b830] animate-pulse"></span>
-              <span className="text-xs font-semibold text-gray-800">Live Tracking Active</span>
+              <span className="text-xs font-semibold text-gray-800 uppercase tracking-wide">{role || 'user'} Active</span>
             </div>
           </div>
         </header>

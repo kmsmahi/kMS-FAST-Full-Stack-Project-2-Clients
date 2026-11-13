@@ -1,12 +1,11 @@
-
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Link, useLocation, useNavigate } from "react-router";
 import { FcGoogle } from "react-icons/fc";
 import { FaRegEye, FaRegEyeSlash } from "react-icons/fa";
-
 import { sendPasswordResetEmail } from "firebase/auth";
 import { auth } from "../firebase/firebase.config";
+import axios from "axios"; // 👈 Import axios
 
 import UseAuth from "../Hooks/UseAuth";
 
@@ -22,15 +21,11 @@ const Login = () => {
 
     const navigate = useNavigate();
     const location = useLocation();
-
     const from = location.state?.from?.pathname || "/";
-
     const [loading, setLoading] = useState(false);
     const [googleLoading, setGoogleLoading] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
-
     const [showPassword, setShowPassword] = useState(false);
-
     const [isForgotModalOpen, setIsForgotModalOpen] = useState(false);
     const [resetEmail, setResetEmail] = useState("");
     const [resetMessage, setResetMessage] = useState("");
@@ -99,6 +94,14 @@ const Login = () => {
             const result = await googleSignIn();
 
             console.log("Google user:", result.user);
+
+            // 👈 Sync Google user in MongoDB backend
+            const userInfo = {
+                name: result.user.displayName,
+                email: result.user.email,
+                image: result.user.photoURL
+            };
+            await axios.post('http://localhost:5000/users', userInfo);
 
             navigate(from, { replace: true });
 
@@ -465,4 +468,4 @@ const Login = () => {
     );
 };
 
-export default Login;
+export default Login

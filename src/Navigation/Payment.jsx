@@ -8,7 +8,6 @@ import { FiShield, FiSmartphone, FiCreditCard } from 'react-icons/fi';
 import Swal from 'sweetalert2';
 import UseAuth from "../Hooks/UseAuth";
 
-// Replace with your actual publishable key from Stripe Dashboard
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY || 'pk_test_sample');
 
 const Payment = () => {
@@ -42,7 +41,7 @@ const Payment = () => {
 
   const handleMobilePayment = async (provider) => {
     if (!mobileNumber || mobileNumber.length < 11) {
-      Swal.fire('Error', `Please enter a valid ${provider} account number`, 'error');
+      Swal.fire('Error', `Please enter a valid 11-digit ${provider} account number`, 'error');
       return;
     }
     if (!pin || pin.length < 4) {
@@ -53,15 +52,15 @@ const Payment = () => {
     try {
       const txId = `${provider.toUpperCase()}-${Math.floor(100000 + Math.random() * 900000)}`;
       
-      // 1. Update parcel payment status
-      const res = await axiosSecure.patch(`/parcels/payment/${parcelId}`, {
+      // 1. Call the dedicated mobile payment route
+      const res = await axiosSecure.patch(`/parcels/mobile-payment/${parcelId}`, {
         transactionId: txId,
         amount: parcel?.cost
       });
 
       if (res.data.modifiedCount > 0 || res.data.success) {
         
-        // 2. Save record to the new 'payments' collection
+        // 2. Save record to the 'payments' collection
         const paymentRecord = {
           parcelId: parcelId,
           parcelName: parcel?.parcelName || 'Express Shipment',
@@ -75,7 +74,7 @@ const Payment = () => {
 
         Swal.fire({
           title: 'Payment Successful!',
-          text: `Paid via ${provider} | TxID: ${txId}`,
+          text: `Paid via ${provider.toUpperCase()} | TxID: ${txId}`,
           icon: 'success',
           confirmButtonColor: '#CAEB66',
           customClass: { popup: 'rounded-3xl', confirmButton: 'rounded-2xl px-5 py-3 text-gray-900 font-bold' }
@@ -85,7 +84,7 @@ const Payment = () => {
       }
     } catch (error) {
       console.error(error);
-      Swal.fire('Error', 'Mobile payment processing failed', 'error');
+      Swal.fire('Error', error.response?.data?.error || 'Mobile payment processing failed', 'error');
     }
   };
 
@@ -139,7 +138,7 @@ const Payment = () => {
                 method === 'bkash' ? 'border-pink-500 bg-pink-50 text-pink-700 shadow-xs' : 'border-gray-200 bg-white text-gray-600 hover:bg-gray-50'
               }`}
             >
-              <span className="w-4 h-4 rounded-full bg-pink-600 text-white flex items-center text-[9px] justify-hidden font-extrabold">b</span> bKash
+              <span className="w-4 h-4 rounded-full bg-pink-600 text-white flex items-center text-[9px] justify-center font-extrabold">b</span> bKash
             </button>
 
             <button
@@ -149,7 +148,7 @@ const Payment = () => {
                 method === 'nagad' ? 'border-orange-500 bg-orange-50 text-orange-700 shadow-xs' : 'border-gray-200 bg-white text-gray-600 hover:bg-gray-50'
               }`}
             >
-              <span className="w-4 h-4 rounded-full bg-orange-600 text-white flex items-center text-[9px] justify-hidden font-extrabold">N</span> Nagad
+              <span className="w-4 h-4 rounded-full bg-orange-600 text-white flex items-center text-[9px] justify-center font-extrabold">N</span> Nagad
             </button>
           </div>
         </div>
@@ -208,4 +207,5 @@ const Payment = () => {
   );
 };
 
+// exports.Payment = Payment;
 export default Payment;
