@@ -35,7 +35,8 @@ export const router = createBrowserRouter([
       },
       {
         path: 'pricing',
-        element: <PrivateRoute><Pricing /></PrivateRoute>
+        element: <PrivateRoute><Pricing /></PrivateRoute>,
+        loader: () => fetch('/warehouses.json').then(res => res.json()),
       },
       {
         path: 'bearider',
