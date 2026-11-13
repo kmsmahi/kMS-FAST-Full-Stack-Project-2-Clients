@@ -1,80 +1,98 @@
-import React, { useEffect, useState } from 'react';
-import { 
-  onAuthStateChanged, 
-  signInWithRedirect,
-  GoogleAuthProvider, 
-  signOut, 
-  updateProfile,
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword
-} from 'firebase/auth';
-import { auth } from '../firebase/firebase.config'; 
-import { AuthContext } from '../Provider/AuthContext';
+
+import React, { useEffect, useState } from "react";
+
+import {
+    onAuthStateChanged,
+    signInWithPopup,
+    GoogleAuthProvider,
+    signOut,
+    updateProfile,
+    createUserWithEmailAndPassword,
+    signInWithEmailAndPassword
+} from "firebase/auth";
+
+import { auth } from "../firebase/firebase.config";
+import { AuthContext } from "./AuthContext";
 
 const googleProvider = new GoogleAuthProvider();
 
 const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
 
-  // 1. Email & Password Register / Create User
-  const createUser = (email, password) => {
-    setLoading(true);
-    return createUserWithEmailAndPassword(auth, email, password);
-  };
+    const [user, setUser] = useState(null);
+    const [loading, setLoading] = useState(true);
 
-  // 2. Email & Password Login / Sign In
-  const signinUser = (email, password) => {
-    setLoading(true);
-    return signInWithEmailAndPassword(auth, email, password);
-  };
+    // Register user
+    const registerUser = (email, password) => {
+        return createUserWithEmailAndPassword(
+            auth,
+            email,
+            password
+        );
+    };
 
-  // 3. Google Login
-  const googleSignIn = () => {
-    setLoading(true);
-    return signInWithRedirect(auth, googleProvider);
-  };
+    // Login user
+    const signinUser = (email, password) => {
+        return signInWithEmailAndPassword(
+            auth,
+            email,
+            password
+        );
+    };
 
-  // 4. Logout
-  const logOut = () => {
-    setLoading(true);
-    return signOut(auth);
-  };
+    // Google login
+    const googleSignIn = () => {
+        return signInWithPopup(auth, googleProvider);
+    };
 
-  // 5. Profile Update
-  const updateUserProfile = (name, photo) => {
-    return updateProfile(auth.currentUser, {
-      displayName: name,
-      photoURL: photo
-    });
-  };
+    // Logout
+    const logOut = () => {
+        return signOut(auth);
+    };
 
-  // --- AUTH OBSERVER ---
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-      console.log('Auth State Changed -> Current User:', currentUser);
-      setUser(currentUser);
-      setLoading(false);
-    });
+    // Update profile
+    const updateUserProfile = (name, photo) => {
+        if (!auth.currentUser) {
+            throw new Error("No authenticated user found.");
+        }
 
-    return () => unsubscribe();
-  }, []);
+        return updateProfile(auth.currentUser, {
+            displayName: name,
+            photoURL: photo
+        });
+    };
 
-  const authInfo = {
-    user,
-    loading,
-    createUser,
-    signinUser,
-    googleSignIn,
-    logOut,
-    updateUserProfile
-  };
+    // Firebase Auth Observer
+    useEffect(() => {
 
-  return (
-    <AuthContext.Provider value={authInfo}>
-      {children}
-    </AuthContext.Provider>
-  );
+        const unsubscribe = onAuthStateChanged(
+            auth,
+            (currentUser) => {
+
+                setUser(currentUser);
+                setLoading(false);
+
+            }
+        );
+
+        return () => unsubscribe();
+
+    }, []);
+
+    const authInfo = {
+        user,
+        loading,
+        registerUser,
+        signinUser,
+        googleSignIn,
+        logOut,
+        updateUserProfile
+    };
+
+    return (
+        <AuthContext.Provider value={authInfo}>
+            {children}
+        </AuthContext.Provider>
+    );
 };
 
 export default AuthProvider;

@@ -1,203 +1,358 @@
-import React, { useState } from 'react';
+
+import React, { useState } from "react";
 import { useForm } from "react-hook-form";
-import UseAuth from "../Hooks/UseAuth";
 import { Link, useNavigate } from "react-router";
-import { FcGoogle } from "react-icons/fc"; 
+import { FcGoogle } from "react-icons/fc";
 import { FaRegEye } from "react-icons/fa";
 import { FaRegEyeSlash } from "react-icons/fa6";
-const Register = () => {
-    const { register, handleSubmit, formState: { errors } } = useForm();
-    const { registerUser, updateUserProfile, googleSignIn } = UseAuth();
-    const navigate = useNavigate();
-    const [loading, setLoading] = useState(false);
-    const [errorMessage, setErrorMessage] = useState('');
-    const [showPassword, setShowPassword] = useState(false);
-    // ImgBB Upload Helper function
-    const uploadImageToImgBB = async (imageFile) => {
-        const formData = new FormData();
-        formData.append("image", imageFile);
-        const apiKey = import.meta.env.VITE_IMGBB_API_KEY;
-        const url = `https://api.imgbb.com/1/upload?key=${apiKey}`;
 
-        const response = await fetch(url, { method: "POST", body: formData });
-        const data = await response.json();
-        if (data.success) {
-            return data.data.url;
-        } else {
-            throw new Error("Image upload failed");
+import UseAuth from "../Hooks/UseAuth";
+
+const Register = () => {
+
+    const {
+        register,
+        handleSubmit,
+        formState: { errors }
+    } = useForm();
+
+    const {
+        registerUser,
+        updateUserProfile,
+        googleSignIn
+    } = UseAuth();
+
+    const navigate = useNavigate();
+
+    const [loading, setLoading] = useState(false);
+    const [googleLoading, setGoogleLoading] = useState(false);
+    const [errorMessage, setErrorMessage] = useState("");
+    const [showPassword, setShowPassword] = useState(false);
+
+    // ImgBB Upload
+    const uploadImageToImgBB = async (imageFile) => {
+
+        const apiKey = import.meta.env.VITE_IMGBB_API_KEY;
+
+        if (!apiKey) {
+            throw new Error("ImgBB API key is missing.");
         }
+
+        const formData = new FormData();
+
+        formData.append("image", imageFile);
+
+        const response = await fetch(
+            `https://api.imgbb.com/1/upload?key=${apiKey}`,
+            {
+                method: "POST",
+                body: formData
+            }
+        );
+
+        const data = await response.json();
+
+        if (!response.ok || !data.success) {
+            throw new Error("Image upload failed.");
+        }
+
+        return data.data.url;
     };
 
+    // Email Registration
     const registerBtnHandler = async (data) => {
+
         setLoading(true);
-        setErrorMessage('');
+        setErrorMessage("");
+
         try {
+
             let photoURL = "";
-            if (data.photo && data.photo[0]) {
-                photoURL = await uploadImageToImgBB(data.photo[0]);
+
+            if (data.photo?.[0]) {
+                photoURL = await uploadImageToImgBB(
+                    data.photo[0]
+                );
             }
 
-            const result = await registerUser(data.email, data.password);
-            console.log("User created:", result.user);
+            const result = await registerUser(
+                data.email,
+                data.password
+            );
 
-            await updateUserProfile(data.name, photoURL);
-            navigate('/');
-        } catch (err) {
-            console.error(err);
-            setErrorMessage(err.message || "Registration failed. Please try again.");
+            await updateUserProfile(
+                data.name,
+                photoURL
+            );
+
+            console.log("Registered user:", result.user);
+
+            navigate("/", { replace: true });
+
+        } catch (error) {
+
+            console.error("Registration error:", error);
+
+            const errorMessages = {
+                "auth/email-already-in-use":
+                    "This email is already registered.",
+
+                "auth/invalid-email":
+                    "Please enter a valid email address.",
+
+                "auth/weak-password":
+                    "Password should be at least 6 characters."
+            };
+
+            setErrorMessage(
+                errorMessages[error.code] ||
+                error.message ||
+                "Registration failed."
+            );
+
         } finally {
+
             setLoading(false);
+
         }
     };
 
-    // Google Sign-In Handler
+    // Google Registration
     const handleGoogleLogin = async () => {
-        setErrorMessage('');
+
+        setGoogleLoading(true);
+        setErrorMessage("");
+
         try {
+
             const result = await googleSignIn();
-            console.log("Google User:", result.user);
-            navigate('/');
-        } catch (err) {
-            console.error(err);
-            setErrorMessage(err.message || "Google sign in failed.");
+
+            console.log("Google user:", result.user);
+
+            navigate("/", { replace: true });
+
+        } catch (error) {
+
+            console.error("Google registration error:", error);
+
+            setErrorMessage(
+                error.message || "Google sign-in failed."
+            );
+
+        } finally {
+
+            setGoogleLoading(false);
+
         }
     };
 
     return (
+
         <div className="w-full">
+
             <div className="flex flex-col gap-6">
-                
-                {/* Header text */}
+
                 <div className="space-y-1 text-center lg:text-left">
-                    <h1 className="text-2xl sm:text-3xl font-extrabold text-gray-900 tracking-tight">Create an account</h1>
-                    <p className="text-sm text-gray-500">Enter your details to register with KMS-FAST</p>
+
+                    <h1 className="text-2xl sm:text-3xl font-extrabold text-gray-900 tracking-tight">
+                        Create an account
+                    </h1>
+
+                    <p className="text-sm text-gray-500">
+                        Enter your details to register with KMS-FAST
+                    </p>
+
                 </div>
 
-                {/* Error Banner */}
                 {errorMessage && (
+
                     <div className="p-3 rounded-xl bg-red-50 border border-red-200 text-xs text-red-600">
                         {errorMessage}
                     </div>
+
                 )}
 
-                {/* Form Container */}
-                <form onSubmit={handleSubmit(registerBtnHandler)} className="space-y-4">
-                    
-                    {/* Name Field */}
+                <form
+                    onSubmit={handleSubmit(registerBtnHandler)}
+                    className="space-y-4"
+                >
+
+                    {/* Name */}
+
                     <div>
-                        <label className="block text-xs font-semibold text-gray-700 mb-1.5">Full Name</label>
-                        <input 
-                            type="text" 
-                            {...register('name', { required: true })} 
-                            className="w-full px-4 py-3 text-sm bg-gray-50/50 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#CAEB66] transition-all" 
-                            placeholder="Kazi Salauddin" 
+
+                        <label className="block text-xs font-semibold text-gray-700 mb-1.5">
+                            Full Name
+                        </label>
+
+                        <input
+                            type="text"
+                            {...register("name", {
+                                required: "Name is required."
+                            })}
+                            className="w-full px-4 py-3 text-sm bg-gray-50/50 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#CAEB66]"
+                            placeholder="Kazi Salauddin"
                         />
-                        {errors.name && <p className="text-red-500 text-xs mt-1">Name is required.</p>}
+
+                        {errors.name && (
+                            <p className="text-red-500 text-xs mt-1">
+                                {errors.name.message}
+                            </p>
+                        )}
+
                     </div>
 
-                    {/* Photo File Input */}
+                    {/* Profile Picture */}
+
                     <div>
-                        <label className="block text-xs font-semibold text-gray-700 mb-1.5">Profile Picture</label>
-                        <input 
-                            type="file" 
+
+                        <label className="block text-xs font-semibold text-gray-700 mb-1.5">
+                            Profile Picture
+                        </label>
+
+                        <input
+                            type="file"
                             accept="image/*"
-                            {...register('photo', { required: true })} 
-                            className="w-full text-xs text-gray-500 file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-[#CAEB66] file:text-gray-900 hover:file:bg-[#b8d655] cursor-pointer bg-gray-50/50 border border-gray-200 rounded-2xl" 
+                            {...register("photo", {
+                                required: "Profile picture is required."
+                            })}
+                            className="w-full text-xs text-gray-500 file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-[#CAEB66] file:text-gray-900 bg-gray-50/50 border border-gray-200 rounded-2xl"
                         />
-                        {errors.photo && <p className="text-red-500 text-xs mt-1">Photo is required.</p>}
+
+                        {errors.photo && (
+                            <p className="text-red-500 text-xs mt-1">
+                                {errors.photo.message}
+                            </p>
+                        )}
+
                     </div>
 
-                    {/* Email Field */}
+                    {/* Email */}
+
                     <div>
-                        <label className="block text-xs font-semibold text-gray-700 mb-1.5">Email Address</label>
-                        <input 
-                            type="email" 
-                            {...register('email', { required: true })} 
-                            className="w-full px-4 py-3 text-sm bg-gray-50/50 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#CAEB66] transition-all" 
-                            placeholder="name@example.com" 
+
+                        <label className="block text-xs font-semibold text-gray-700 mb-1.5">
+                            Email Address
+                        </label>
+
+                        <input
+                            type="email"
+                            {...register("email", {
+                                required: "Email is required."
+                            })}
+                            className="w-full px-4 py-3 text-sm bg-gray-50/50 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#CAEB66]"
+                            placeholder="name@example.com"
                         />
-                        {errors.email && <p className="text-red-500 text-xs mt-1">Email is required.</p>}
+
+                        {errors.email && (
+                            <p className="text-red-500 text-xs mt-1">
+                                {errors.email.message}
+                            </p>
+                        )}
+
                     </div>
 
-                    {/* Password Field */}
+                    {/* Password */}
+
                     <div>
-    <div className="flex items-center justify-between mb-1.5">
-        <label className="block text-xs font-semibold text-gray-700">Password</label>
-        <Link 
-            to="#" 
-            className="text-xs font-semibold text-[#96b830] hover:underline"
-        >
-            Forgot password?
-        </Link>
-    </div>
 
-    {/* Input container with relative positioning for eye icon */}
-    <div className="relative flex items-center">
-        <input 
-            type={showPassword ? "text" : "password"} 
-            {...register('password', { required: true })} 
-            className="w-full px-4 py-3 pr-10 text-sm bg-gray-50/50 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#CAEB66] transition-all" 
-            placeholder="••••••••" 
-        />
-        
-        {/* Toggle Button */}
-        <button
-            type="button"
-            onClick={() => setShowPassword(!showPassword)}
-            className="absolute right-3.5 text-gray-500 hover:text-gray-800 transition-colors focus:outline-none cursor-pointer"
-            aria-label={showPassword ? "Hide password" : "Show password"}
-        >
-            {showPassword ? (
-                <FaRegEye className="w-4 h-4" />
-            ) : (
-                <FaRegEyeSlash className="w-4 h-4" />
-            )}
-        </button>
-    </div>
+                        <label className="block text-xs font-semibold text-gray-700 mb-1.5">
+                            Password
+                        </label>
 
-    {errors.password && (
-        <p className="text-red-500 text-xs mt-1">Password is required.</p>
-    )}
-</div>
+                        <div className="relative flex items-center">
 
-                    {/* Submit Button */}
-                    <button 
-                        disabled={loading}
-                        className="w-full mt-2 py-3.5 px-4 bg-[#CAEB66] hover:bg-[#b8d655] text-gray-900 font-bold text-sm rounded-2xl transition-all shadow-sm disabled:opacity-50 flex items-center justify-center gap-2 cursor-pointer"
+                            <input
+                                type={showPassword ? "text" : "password"}
+                                {...register("password", {
+                                    required: "Password is required.",
+                                    minLength: {
+                                        value: 6,
+                                        message: "Password must be at least 6 characters."
+                                    }
+                                })}
+                                className="w-full px-4 py-3 pr-10 text-sm bg-gray-50/50 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#CAEB66]"
+                                placeholder="••••••••"
+                            />
+
+                            <button
+                                type="button"
+                                onClick={() => setShowPassword(!showPassword)}
+                                className="absolute right-3.5 text-gray-500 cursor-pointer"
+                            >
+                                {showPassword
+                                    ? <FaRegEye />
+                                    : <FaRegEyeSlash />
+                                }
+                            </button>
+
+                        </div>
+
+                        {errors.password && (
+                            <p className="text-red-500 text-xs mt-1">
+                                {errors.password.message}
+                            </p>
+                        )}
+
+                    </div>
+
+                    {/* Register Button */}
+
+                    <button
+                        type="submit"
+                        disabled={loading || googleLoading}
+                        className="w-full mt-2 py-3.5 px-4 bg-[#CAEB66] hover:bg-[#b8d655] text-gray-900 font-bold text-sm rounded-2xl transition-all disabled:opacity-50 cursor-pointer"
                     >
                         {loading ? "Creating Account..." : "Register"}
                     </button>
+
                 </form>
 
-                {/* Already have an account link */}
                 <p className="text-center text-xs text-gray-600">
-                    Already have an account?{' '}
-                    <Link to='/login' className="text-gray-900 font-bold underline hover:text-[#96b830] transition-colors">
+
+                    Already have an account?{" "}
+
+                    <Link
+                        to="/login"
+                        className="text-gray-900 font-bold underline"
+                    >
                         Log in
                     </Link>
+
                 </p>
 
-                {/* Divider */}
                 <div className="relative flex py-1 items-center">
-                    <div className="flex-grow border-t border-gray-200"></div>
-                    <span className="flex-shrink mx-4 text-gray-400 text-xs font-medium uppercase">Or continue with</span>
-                    <div className="flex-grow border-t border-gray-200"></div>
+
+                    <div className="flex-grow border-t border-gray-200" />
+
+                    <span className="mx-4 text-gray-400 text-xs font-medium uppercase">
+                        Or continue with
+                    </span>
+
+                    <div className="flex-grow border-t border-gray-200" />
+
                 </div>
 
-                {/* Google Sign In Button */}
-                <div className="flex justify-center w-full">
-                    <button 
-                        onClick={handleGoogleLogin} 
-                        type="button" 
-                        className="btn btn-wide items-center gap-2 shadow-sm border border-gray-200 rounded-2xl hover:bg-gray-50"
-                    >
-                        <span><FcGoogle className="w-6 h-6" /></span>
-                        Register with google
-                    </button>
-                </div>
+                <button
+                    onClick={handleGoogleLogin}
+                    type="button"
+                    disabled={loading || googleLoading}
+                    className="w-full py-3 border border-gray-200 rounded-2xl hover:bg-gray-50 flex items-center justify-center gap-2 text-sm font-semibold disabled:opacity-50 cursor-pointer"
+                >
+
+                    <FcGoogle className="w-5 h-5" />
+
+                    {googleLoading
+                        ? "Connecting..."
+                        : "Register with Google"
+                    }
+
+                </button>
 
             </div>
+
         </div>
+
     );
 };
 
