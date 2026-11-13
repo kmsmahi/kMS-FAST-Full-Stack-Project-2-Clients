@@ -7,6 +7,7 @@ import UseAxios from '../Hooks/UseAxios';
 import { FiShield, FiSmartphone, FiCreditCard } from 'react-icons/fi';
 import Swal from 'sweetalert2';
 import UseAuth from "../Hooks/UseAuth";
+
 // Replace with your actual publishable key from Stripe Dashboard
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY || 'pk_test_sample');
 
@@ -51,12 +52,27 @@ const Payment = () => {
 
     try {
       const txId = `${provider.toUpperCase()}-${Math.floor(100000 + Math.random() * 900000)}`;
+      
+      // 1. Update parcel payment status
       const res = await axiosSecure.patch(`/parcels/payment/${parcelId}`, {
         transactionId: txId,
         amount: parcel?.cost
       });
 
-      if (res.data.modifiedCount > 0) {
+      if (res.data.modifiedCount > 0 || res.data.success) {
+        
+        // 2. Save record to the new 'payments' collection
+        const paymentRecord = {
+          parcelId: parcelId,
+          parcelName: parcel?.parcelName || 'Express Shipment',
+          customerEmail: parcel?.senderEmail || user?.email,
+          amount: parcel?.cost,
+          transactionId: txId,
+          method: provider.toUpperCase()
+        };
+
+        await axiosSecure.post('/payments', paymentRecord);
+
         Swal.fire({
           title: 'Payment Successful!',
           text: `Paid via ${provider} | TxID: ${txId}`,

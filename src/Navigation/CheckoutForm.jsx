@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import {
     CardElement,
@@ -8,12 +7,14 @@ import {
 import { useNavigate } from "react-router";
 import Swal from "sweetalert2";
 import UseAxios from "../Hooks/UseAxios";
+import UseAuth from "../Hooks/UseAuth";
 
 const CheckoutForm = ({ parcel }) => {
     const stripe = useStripe();
     const elements = useElements();
     const axiosSecure = UseAxios();
     const navigate = useNavigate();
+    const { user } = UseAuth();
 
     const [clientSecret, setClientSecret] = useState("");
     const [loadingSecret, setLoadingSecret] = useState(true);
@@ -103,6 +104,7 @@ const CheckoutForm = ({ parcel }) => {
 
             if (paymentIntent?.status === "succeeded") {
 
+                // 1. Update parcel status via patch route
                 const response = await axiosSecure.patch(
                     `/parcels/payment/${parcel._id}`,
                     {
@@ -110,7 +112,20 @@ const CheckoutForm = ({ parcel }) => {
                     }
                 );
 
-                if (response.data.success) {
+                if (response.data.success || response.data.modifiedCount > 0) {
+                    
+                    // 2. Save transaction to the new 'payments' collection
+                    const paymentRecord = {
+                        parcelId: parcel._id,
+                        parcelName: parcel?.parcelName || 'Express Shipment',
+                        customerEmail: parcel?.senderEmail || user?.email,
+                        amount: parcel.cost,
+                        transactionId: paymentIntent.id,
+                        method: 'CARD (Stripe)'
+                    };
+
+                    await axiosSecure.post('/payments', paymentRecord);
+
                     await Swal.fire({
                         title: "Payment Successful!",
                         text: `Transaction ID: ${paymentIntent.id}`,
