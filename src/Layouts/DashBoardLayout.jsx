@@ -49,13 +49,9 @@ export default function DashboardLayout() {
             to="/"
             className="flex items-center gap-3 group focus:outline-none rounded-xl p-1"
           >
-            {/* <div className="w-10 h-10 flex items-center justify-center transition-transform duration-300 group-hover:scale-105 bg-gray-50 rounded-xl border border-gray-100 shadow-xs">
-              <Logo />
-            </div> */}
-
             <div className="w-9 h-9 flex items-center justify-center transition-transform duration-300 group-hover:scale-105">
               <Logo />
-             </div>
+            </div>
             <div className="flex flex-col">
               <span className="text-xl font-extrabold tracking-tight text-gray-900 leading-none -mb-4">
                 KMS<span className="text-[#96b830]">-FAST</span>
@@ -76,6 +72,7 @@ export default function DashboardLayout() {
           <NavLink 
             to="/dashboard" 
             end 
+            onClick={() => setSidebarOpen(false)}
             className={({ isActive }) => `flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-semibold transition-all duration-200 ${isActive ? 'bg-[#CAEB66] text-gray-900 shadow-xs' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'}`}
           >
             <svg className="w-5 h-5 opacity-80" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -86,6 +83,7 @@ export default function DashboardLayout() {
 
           <NavLink 
             to="/dashboard/send-parcel" 
+            onClick={() => setSidebarOpen(false)}
             className={({ isActive }) => `flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-semibold transition-all duration-200 ${isActive ? 'bg-[#CAEB66] text-gray-900 shadow-xs' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'}`}
           >
             <svg className="w-5 h-5 opacity-80" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -96,6 +94,7 @@ export default function DashboardLayout() {
 
           <NavLink 
             to="/dashboard/my-parcels" 
+            onClick={() => setSidebarOpen(false)}
             className={({ isActive }) => `flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-semibold transition-all duration-200 ${isActive ? 'bg-[#CAEB66] text-gray-900 shadow-xs' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'}`}
           >
             <svg className="w-5 h-5 opacity-80" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -104,12 +103,25 @@ export default function DashboardLayout() {
             My Parcels
           </NavLink>
 
+          {/* Added Payment History Link */}
+          <NavLink 
+            to="/dashboard/payment-history" 
+            onClick={() => setSidebarOpen(false)}
+            className={({ isActive }) => `flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-semibold transition-all duration-200 ${isActive ? 'bg-[#CAEB66] text-gray-900 shadow-xs' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'}`}
+          >
+            <svg className="w-5 h-5 opacity-80" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+            </svg>
+            Payment History
+          </NavLink>
+
           <div className="pt-6 px-3 pb-2 text-[11px] font-bold uppercase tracking-wider text-gray-400">
             System
           </div>
 
           <NavLink 
             to="/" 
+            onClick={() => setSidebarOpen(false)}
             className="flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-semibold text-gray-600 hover:bg-gray-50 hover:text-gray-900 transition-all duration-200"
           >
             <svg className="w-5 h-5 opacity-80" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
