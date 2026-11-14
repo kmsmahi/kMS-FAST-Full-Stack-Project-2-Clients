@@ -11,6 +11,7 @@ import {
 
 import { auth } from "../firebase/firebase.config";
 import { AuthContext } from "./AuthContext";
+import UseAxios from "../Hooks/UseAxios"; // 👈 Import your axios hook
 
 const googleProvider = new GoogleAuthProvider();
 
@@ -18,45 +19,91 @@ const AuthProvider = ({ children }) => {
 
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
+    const axiosSecure = UseAxios(); // 👈 Initialize your secure/public axios hook
+
+    // Helper function to save user to MongoDB database
+    const saveUserToDB = async (userInfo) => {
+        try {
+            await axiosSecure.post('/users', userInfo);
+        } catch (error) {
+            console.error("Error saving user to database:", error);
+        }
+    };
 
     // Register user
-    const registerUser = (email, password) => {
-        return createUserWithEmailAndPassword(
-            auth,
-            email,
-            password
-        );
+    const registerUser = async (email, password, name = "Valued User", photo = "") => {
+        setLoading(true);
+        const result = await createUserWithEmailAndPassword(auth, email, password);
+        
+        // Save user profile to MongoDB upon registration
+        await saveUserToDB({
+            name: name,
+            email: email,
+            image: photo
+        });
+
+        return result;
     };
 
     // Login user
-    const signinUser = (email, password) => {
-        return signInWithEmailAndPassword(
-            auth,
-            email,
-            password
-        );
+    const signinUser = async (email, password) => {
+        setLoading(true);
+        const result = await signInWithEmailAndPassword(auth, email, password);
+        const loggedUser = result.user;
+
+        // Ensure user exists in MongoDB when logging in (handles pre-existing users)
+        await saveUserToDB({
+            name: loggedUser.displayName || "Valued User",
+            email: loggedUser.email,
+            image: loggedUser.photoURL || ""
+        });
+
+        return result;
     };
 
     // Google login
-    const googleSignIn = () => {
-        return signInWithPopup(auth, googleProvider);
+    const googleSignIn = async () => {
+        setLoading(true);
+        const result = await signInWithPopup(auth, googleProvider);
+        const loggedUser = result.user;
+
+        // Save or sync Google user to MongoDB
+        await saveUserToDB({
+            name: loggedUser.displayName || "Valued User",
+            email: loggedUser.email,
+            image: loggedUser.photoURL || ""
+        });
+
+        return result;
     };
 
     // Logout
     const logOut = () => {
+        setLoading(true);
         return signOut(auth);
     };
 
     // Update profile
-    const updateUserProfile = (name, photo) => {
+    const updateUserProfile = async (name, photo) => {
         if (!auth.currentUser) {
             throw new Error("No authenticated user found.");
         }
 
-        return updateProfile(auth.currentUser, {
+        const result = await updateProfile(auth.currentUser, {
             displayName: name,
             photoURL: photo
         });
+
+        // Optional: Sync updated info to DB if needed
+        if (auth.currentUser?.email) {
+            await saveUserToDB({
+                name: name,
+                email: auth.currentUser.email,
+                image: photo
+            });
+        }
+
+        return result;
     };
 
     // Firebase Auth Observer
