@@ -11,38 +11,56 @@ import {
 
 import { auth } from "../firebase/firebase.config";
 import { AuthContext } from "./AuthContext";
-import UseAxios from "../Hooks/UseAxios"; // 👈 Import your axios hook
-
+import axios from "axios"; 
 const googleProvider = new GoogleAuthProvider();
 
 const AuthProvider = ({ children }) => {
 
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
-    const axiosSecure = UseAxios(); // 👈 Initialize your secure/public axios hook
 
-    // Helper function to save user to MongoDB database
+    // Use standard public axios instance or base URL for user creation
     const saveUserToDB = async (userInfo) => {
         try {
-            await axiosSecure.post('/users', userInfo);
+            const backendURL = import.meta.env.VITE_API_URL || "http://localhost:5000";
+            await axios.post(`${backendURL}/users`, userInfo);
         } catch (error) {
             console.error("Error saving user to database:", error);
         }
     };
 
     // Register user
+    // const registerUser = async (email, password, name = "Valued User", photo = "") => {
+    //     setLoading(true);
+    //     const result = await createUserWithEmailAndPassword(auth, email, password);
+        
+    //     await saveUserToDB({
+    //         name: name,
+    //         email: email,
+    //         image: photo
+    //     });
+
+    //     return result;
+    // };
     const registerUser = async (email, password, name = "Valued User", photo = "") => {
         setLoading(true);
-        const result = await createUserWithEmailAndPassword(auth, email, password);
-        
-        // Save user profile to MongoDB upon registration
-        await saveUserToDB({
-            name: name,
-            email: email,
-            image: photo
-        });
+        try {
+            const result = await createUserWithEmailAndPassword(auth, email, password);
+            
+            await saveUserToDB({
+                name: name,
+                email: email,
+                image: photo
+            });
 
-        return result;
+            return result;
+        } catch (error) {
+            console.error("Firebase Registration Error Code:", error.code);
+            console.error("Firebase Registration Error Message:", error.message);
+            throw error; // Let the form catch it if needed
+        } finally {
+            setLoading(false);
+        }
     };
 
     // Login user
@@ -51,7 +69,6 @@ const AuthProvider = ({ children }) => {
         const result = await signInWithEmailAndPassword(auth, email, password);
         const loggedUser = result.user;
 
-        // Ensure user exists in MongoDB when logging in (handles pre-existing users)
         await saveUserToDB({
             name: loggedUser.displayName || "Valued User",
             email: loggedUser.email,
@@ -67,7 +84,6 @@ const AuthProvider = ({ children }) => {
         const result = await signInWithPopup(auth, googleProvider);
         const loggedUser = result.user;
 
-        // Save or sync Google user to MongoDB
         await saveUserToDB({
             name: loggedUser.displayName || "Valued User",
             email: loggedUser.email,
@@ -94,7 +110,6 @@ const AuthProvider = ({ children }) => {
             photoURL: photo
         });
 
-        // Optional: Sync updated info to DB if needed
         if (auth.currentUser?.email) {
             await saveUserToDB({
                 name: name,
@@ -108,19 +123,15 @@ const AuthProvider = ({ children }) => {
 
     // Firebase Auth Observer
     useEffect(() => {
-
         const unsubscribe = onAuthStateChanged(
             auth,
             (currentUser) => {
-
                 setUser(currentUser);
                 setLoading(false);
-
             }
         );
 
         return () => unsubscribe();
-
     }, []);
 
     const authInfo = {

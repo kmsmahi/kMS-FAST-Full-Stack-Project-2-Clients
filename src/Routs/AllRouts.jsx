@@ -15,6 +15,7 @@ import DashboardLayout from "../Layouts/DashBoardLayout";
 import Payment from "../Navigation/Payment";
 import PaymentHistory from "../Navigation/PaymentHistory";
 import RidersList from "../Navigation/RidersList";
+import UsersList from "../Navigation/UsersList";
 
 export const router = createBrowserRouter([
   {
@@ -88,7 +89,11 @@ export const router = createBrowserRouter([
       {
         path: 'riders-list',
         element: <RidersList />
-}
+      },
+      {
+        path: 'users-list',
+        element: <UsersList />
+      }
     ]
   }
 ]);
