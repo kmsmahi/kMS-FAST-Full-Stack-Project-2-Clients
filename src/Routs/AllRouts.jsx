@@ -16,6 +16,7 @@ import Payment from "../Navigation/Payment";
 import PaymentHistory from "../Navigation/PaymentHistory";
 import RidersList from "../Navigation/RidersList";
 import UsersList from "../Navigation/UsersList";
+import AllParcels from "../Navigation/AllParcels";
 
 export const router = createBrowserRouter([
   {
@@ -93,6 +94,10 @@ export const router = createBrowserRouter([
       {
         path: 'users-list',
         element: <UsersList />
+      },
+      {
+        path: 'all-parcels',
+        element: <AllParcels/>
       }
     ]
   }
