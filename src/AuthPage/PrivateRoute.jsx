@@ -1,27 +1,23 @@
 import React from 'react';
-import { Navigate, useLocation } from 'react-router';
 import UseAuth from '../Hooks/UseAuth';
+import NotFound from '../Shared/NotFound';
 
 const PrivateRoute = ({ children }) => {
   const { user, loading } = UseAuth();
-  const location = useLocation();
 
   if (loading) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center gap-3 bg-white">
-        <span className="loading loading-spinner loading-lg text-[#96b830]"></span>
-        <p className="text-sm font-medium text-gray-500 animate-pulse">
-          Verifying security session...
-        </p>
+      <div className="flex justify-center items-center min-h-screen">
+        <span className="loading loading-spinner loading-lg" style={{ color: '#96b830' }}></span>
       </div>
     );
   }
 
-  if (user) {
-    return children;
+  if (!user) {
+    return <NotFound />;
   }
 
-  return <Navigate state={{ from: location }} to="/login" replace />;
+  return children;
 };
 
 export default PrivateRoute;

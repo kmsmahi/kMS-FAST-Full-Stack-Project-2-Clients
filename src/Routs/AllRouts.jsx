@@ -17,24 +17,27 @@ import PaymentHistory from "../Navigation/PaymentHistory";
 import RidersList from "../Navigation/RidersList";
 import UsersList from "../Navigation/UsersList";
 import AllParcels from "../Navigation/AllParcels";
+import AdminRoute from "../AuthPage/AdminRoute";
+import NotFound from "../Shared/NotFound";
 
 export const router = createBrowserRouter([
   {
     path: "/",
-    element: <RootLayout></RootLayout>,
-    children:[
+    element: <RootLayout />,
+    errorElement: <NotFound />,
+    children: [
       {
         index: true,
-        element: <Home></Home>
+        element: <Home />
       },
       {
         path: 'coverage',
-        element: <Coverage></Coverage>,
+        element: <Coverage />,
         loader: () => fetch('/warehouses.json').then(res => res.json()),
       },
       {
         path: 'aboutus',
-        element: <AboutUs></AboutUs>
+        element: <AboutUs />
       },
       {
         path: 'pricing',
@@ -50,55 +53,65 @@ export const router = createBrowserRouter([
   },
   {
     path: '/',
-    element: <AuthLayout></AuthLayout>,
-    children:[
+    element: <AuthLayout />,
+    errorElement: <NotFound />,
+    children: [
       {
         path: 'login',
-        element: <Login></Login>
+        element: <Login />
       },
       {
         path: 'register',
-        element: <Register></Register>
+        element: <Register />
       },
     ]
   },
   {
     path: '/dashboard',
     element: <PrivateRoute><DashboardLayout /></PrivateRoute>,
+    errorElement: <NotFound />,
     children: [
-      { 
-        path: '', 
-        element: <div className="text-xl font-bold">Welcome to your Dashboard Overview!</div> 
+      {
+        index: true,
+        element: <div className="text-xl font-bold">Welcome to your Dashboard Overview!</div>
       },
-      { 
-        path: 'my-parcels', 
-        element: <MyParcels /> 
+      {
+        path: 'my-parcels',
+        element: <MyParcels />
       },
-      { 
-        path: 'send-parcel', 
+      {
+        path: 'send-parcel',
         element: <SendParcel />,
         loader: () => fetch('/warehouses.json').then(res => res.json()),
       },
       {
-        path:'payment',
-        element:<Payment></Payment>
+        path: 'payment',
+        element: <Payment />
       },
       {
-        path:'payment-history',
-        element:<PaymentHistory></PaymentHistory>
+        path: 'payment-history',
+        element: <PaymentHistory />
       },
       {
         path: 'riders-list',
-        element: <RidersList />
+        element: <AdminRoute><RidersList /></AdminRoute>
       },
       {
         path: 'users-list',
-        element: <UsersList />
+        element: <AdminRoute><UsersList /></AdminRoute>
       },
       {
         path: 'all-parcels',
-        element: <AllParcels/>
+        element: <AdminRoute><AllParcels /></AdminRoute>
+      },
+      {
+        path: '*',
+        element: <NotFound />
       }
     ]
+  },
+  {
+    path: '*',
+    element: <NotFound />
   }
 ]);
